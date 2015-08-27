@@ -54,6 +54,7 @@ workflows:
         inputs:
         - content: golint
     - slack:
+        run_if: .IsCI
         inputs:
         - webhook_url: $INTERNAL_DEV_SLACK_WEBHOOK_URL
         - channel: $INTERNAL_DEV_SLACK_CHANNEL
