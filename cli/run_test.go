@@ -18,7 +18,7 @@ envs:
 	t.Log("Inventory:", inventoryBase64Str)
 
 	configStr := `
-format_version: 0.9.11
+format_version: 0.9.10
 default_step_lib_source: "https://github.com/bitrise-io/bitrise-steplib.git"
 
 workflows:
