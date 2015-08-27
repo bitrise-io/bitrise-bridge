@@ -2,14 +2,23 @@ package cli
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"path"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/codegangsta/cli"
 )
 
+func initLogFormatter() {
+	log.SetFormatter(&log.TextFormatter{
+		FullTimestamp:   true,
+		ForceColors:     true,
+		TimestampFormat: "15:04:05",
+	})
+}
+
 func before(c *cli.Context) error {
+	initLogFormatter()
 	return nil
 }
 

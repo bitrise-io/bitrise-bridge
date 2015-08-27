@@ -1,7 +1,7 @@
 package main
 
-import "github.com/bitrise-io/envman/cli"
+import "github.com/bitrise-io/bitrise-bridge/cli"
 
-func man() {
+func main() {
 	cli.Run()
 }

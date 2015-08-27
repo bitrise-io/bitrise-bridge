@@ -3,25 +3,34 @@ package cli
 import "github.com/codegangsta/cli"
 
 const (
+	// InventoryDataKey ...
+	InventoryDataKey      = "inventory"
+	inventoryDataKeyShort = "i"
+
 	// ConfigDataKey ...
-	ConfigDataKey      = "config-data"
+	ConfigDataKey      = "config"
 	configDataKeyShort = "c"
 
-	// InventoryDataKey ...
-	InventoryDataKey      = "inventory-data"
-	inventoryDataKeyShort = "i"
+	// WorkflowNameKey ...
+	WorkflowNameKey      = "workflow"
+	workflowNameKeyShort = "w"
 )
 
 var (
 	flags = []cli.Flag{}
+
+	flInventoryData = cli.StringFlag{
+		Name:  InventoryDataKey + ", " + inventoryDataKeyShort,
+		Usage: ".",
+	}
 
 	flConfigData = cli.StringFlag{
 		Name:  ConfigDataKey + ", " + configDataKeyShort,
 		Usage: ".",
 	}
 
-	flInventoryData = cli.StringFlag{
-		Name:  InventoryDataKey + ", " + inventoryDataKeyShort,
+	flWorkflowName = cli.StringFlag{
+		Name:  WorkflowNameKey + ", " + workflowNameKeyShort,
 		Usage: ".",
 	}
 )

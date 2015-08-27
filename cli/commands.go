@@ -10,8 +10,9 @@ var (
 			Usage:   ".",
 			Action:  run,
 			Flags: []cli.Flag{
-				flConfigData,
 				flInventoryData,
+				flConfigData,
+				flWorkflowName,
 			},
 		},
 	}
