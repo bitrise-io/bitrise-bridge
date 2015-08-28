@@ -19,6 +19,19 @@ func initLogFormatter() {
 
 func before(c *cli.Context) error {
 	initLogFormatter()
+
+	// Log level
+	logLevelStr := c.String(LogLevelKey)
+	if logLevelStr == "" {
+		logLevelStr = "info"
+	}
+
+	level, err := log.ParseLevel(logLevelStr)
+	if err != nil {
+		return err
+	}
+	log.SetLevel(level)
+
 	return nil
 }
 
