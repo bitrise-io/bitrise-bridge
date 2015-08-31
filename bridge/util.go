@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	bitriseModels "github.com/bitrise-io/bitrise/models/models_1_0_0"
+	bitriseModels "github.com/bitrise-io/bitrise/models"
 	envmanModels "github.com/bitrise-io/envman/models"
 	"github.com/bitrise-io/go-utils/fileutil"
 	"gopkg.in/yaml.v2"

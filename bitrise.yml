@@ -1,4 +1,4 @@
-format_version: 0.9.10
+format_version: 1.0.0
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 
 app:
@@ -7,19 +7,8 @@ app:
   - GITHUB_RELEASES_URL: https://github.com/bitrise-io/${BITRISE_BIN_NAME}/releases
 
 workflows:
-  godeps-update:
-    steps:
-    - script:
-        title: Dependency update
-        inputs:
-        - content: |-
-            #!/bin/bash
-            set -v
-            set -e
-            rm -rf ./Godeps
-            godep save
 
-  ci:
+  _install_test_tools:
     steps:
     - script:
         title: Install required testing tools
@@ -37,10 +26,17 @@ workflows:
 
             # Go lint
             go get -u github.com/golang/lint/golint
+
+  _test:
+    steps:
     - script:
         title: Godeps - GOPATH patch
         inputs:
-        - content: envman add --key GOPATH --value "$(godep path):$GOPATH"
+        - content: |-
+            set -e
+            set -v
+            envman add --key ORIG_GOPATH --value "$GOPATH"
+            envman add --key GOPATH --value "$(godep path):$GOPATH"
     - script:
         title: Go Test
         inputs:
@@ -53,6 +49,42 @@ workflows:
         title: Go Lint
         inputs:
         - content: golint
+    - script:
+        title: Restore original GOPATH
+        inputs:
+        - content: envman add --key GOPATH --value "$ORIG_GOPATH"
+
+  install:
+    before_run:
+    - _test
+    steps:
+    - script:
+        title: Test & install
+        inputs:
+        - content: |-
+            #!/bin/bash
+            set -v
+            set -e
+
+            go install
+
+  godeps-update:
+    steps:
+    - script:
+        title: Dependency update
+        inputs:
+        - content: |-
+            #!/bin/bash
+            set -v
+            set -e
+            rm -rf ./Godeps
+            godep save
+
+  ci:
+    before_run:
+    - _install_test_tools
+    - _test
+    steps:
     - slack:
         run_if: .IsCI
         inputs:
@@ -70,3 +102,39 @@ workflows:
             CI FAILED on branch: *${BITRISE_GIT_BRANCH}*
 
             Build URL: ${BITRISE_BUILD_URL}
+
+  create-release:
+    before_run:
+    - _test
+    steps:
+    - script:
+        title: Creating deploy
+        inputs:
+        - content: |-
+            #!/bin/bash
+            set -v
+            set -e
+            if [ -f _bin/tmpbin ] ; then
+              rm _bin/tmpbin
+            fi
+            go build -o _bin/tmpbin
+            binversion="$(_bin/tmpbin -version)"
+            echo "binversion: ${binversion}"
+            mkdir -p _bin/${binversion}
+            finalpth=_bin/${binversion}/${BITRISE_BIN_NAME}-$(uname -s)-$(uname -m)
+            echo "finalpth: ${finalpth}"
+            mv _bin/tmpbin "${finalpth}"
+            # register the version for next steps
+            envman add --key RELEASE_VERSION --value "${binversion}"
+    - script:
+        title: Creating release changelog template
+        inputs:
+        - content: |-
+            changelog_path = "./_changelogs/#{ENV['RELEASE_VERSION']}.md"
+            puts " * changelog_path: #{changelog_path}"
+            template_content = File.read("./_changelogs/template.md")
+            changelog_content = template_content.gsub("{{version}}", ENV['RELEASE_VERSION'])
+            File.open(changelog_path, "w") do |f|
+              f.write(changelog_content)
+            end
+        - runner_bin: ruby

@@ -46,7 +46,7 @@ func Run() {
 	app := cli.NewApp()
 	app.Name = path.Base(os.Args[0])
 	app.Usage = ""
-	app.Version = "0.0.1"
+	app.Version = "0.9.0"
 
 	app.Author = ""
 	app.Email = ""
