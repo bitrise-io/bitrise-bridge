@@ -56,7 +56,8 @@ func runWorkflow(inventoryBase64Str, configBase64Str, workflowName string) (stri
 
 	// Call bitrise
 	if err := bridge.CMDBridgeDoBitriseRun(inventoryFilePath, configFilePath, workflowName); err != nil {
-		return inventoryFilePath, configFilePath, fmt.Errorf("cmd: `bitrise run %s --inventory %s --path %s` failed, error: %s", workflowName, inventoryFilePath, configFilePath, err.Error())
+		log.Debugf("cmd: `bitrise run %s --inventory %s --path %s` failed, error: %s", workflowName, inventoryFilePath, configFilePath, err)
+		return inventoryFilePath, configFilePath, err
 	}
 
 	return inventoryFilePath, configFilePath, nil
@@ -76,10 +77,7 @@ func run(c *cli.Context) {
 		log.Fatal("Missing required workflow name")
 	}
 
-	if inventoryFilePath, configFilePath, err := runWorkflow(inventoryBase64Str, configBase64Str, workflowName); err != nil {
-		log.Warn("Failed to run workflow, params:")
-		log.Warnf("Inventory path (%s)", inventoryFilePath)
-		log.Warnf("Config path (%s)", configFilePath)
-		log.Fatalln("Error:", err)
+	if _, _, err := runWorkflow(inventoryBase64Str, configBase64Str, workflowName); err != nil {
+		log.Fatalf("Failed to run, error: %s", err)
 	}
 }
