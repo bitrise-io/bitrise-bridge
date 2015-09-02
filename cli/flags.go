@@ -21,6 +21,9 @@ const (
 	// WorkflowNameKey ...
 	WorkflowNameKey      = "workflow"
 	workflowNameKeyShort = "w"
+
+	// TriggerPatternNameKey ...
+	TriggerPatternNameKey = "pattern"
 )
 
 var (
@@ -36,16 +39,21 @@ var (
 
 	flInventoryData = cli.StringFlag{
 		Name:  InventoryDataKey + ", " + inventoryDataKeyShort,
-		Usage: ".",
+		Usage: "inventory/secrets data (~ content of .bitrise.secrets.yml)",
 	}
 
 	flConfigData = cli.StringFlag{
 		Name:  ConfigDataKey + ", " + configDataKeyShort,
-		Usage: ".",
+		Usage: "config data (~ content of bitrise.yml)",
 	}
 
 	flWorkflowName = cli.StringFlag{
 		Name:  WorkflowNameKey + ", " + workflowNameKeyShort,
-		Usage: ".",
+		Usage: "workflow to pass to bitrise",
+	}
+
+	flTriggerPattern = cli.StringFlag{
+		Name:  TriggerPatternNameKey,
+		Usage: "trigger pattern to pass to bitrise",
 	}
 )

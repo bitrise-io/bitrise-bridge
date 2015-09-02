@@ -7,21 +7,30 @@ import (
 	"github.com/bitrise-io/go-utils/cmdex"
 )
 
-// BitriseRun ...
-func BitriseRun(inventoryPth, configPth, workflowName string) error {
+// // BitriseRunOrTrigger ...
+// func BitriseRunOrTrigger(inventoryPth, configPth, workflowNameOrTriggerPattern string, isUseTrigger bool) error {
+// 	logLevel := log.GetLevel().String()
+// bitriseCommandToUse := "run"
+// if isUseTrigger {
+// 	bitriseCommandToUse = "trigger"
+// }
+// 	args := []string{"--loglevel", logLevel, bitriseCommandToUse, workflowNameOrTriggerPattern, "--path", configPth}
+// 	if inventoryPth != "" {
+// 		args = append(args, "--inventory", inventoryPth)
+// 	}
+// 	return cmdex.RunCommand("bitrise", args...)
+// }
+
+// CMDBridgeDoBitriseRunOrTrigger ...
+func CMDBridgeDoBitriseRunOrTrigger(inventoryPth, configPth, workflowNameOrTriggerPattern string, isUseTrigger bool) error {
 	logLevel := log.GetLevel().String()
-	args := []string{"--loglevel", logLevel, "run", workflowName, "--path", configPth}
-	if inventoryPth != "" {
-		args = append(args, "--inventory", inventoryPth)
+
+	bitriseCommandToUse := "run"
+	if isUseTrigger {
+		bitriseCommandToUse = "trigger"
 	}
-	return cmdex.RunCommand("bitrise", args...)
-}
 
-// CMDBridgeDoBitriseRun ...
-func CMDBridgeDoBitriseRun(inventoryPth, configPth, workflowName string) error {
-	logLevel := log.GetLevel().String()
-
-	params := fmt.Sprintf("bitrise --loglevel %s run %s --path %s", logLevel, workflowName, configPth)
+	params := fmt.Sprintf("bitrise --loglevel %s %s %s --path %s", logLevel, bitriseCommandToUse, workflowNameOrTriggerPattern, configPth)
 	if inventoryPth != "" {
 		params = params + fmt.Sprintf(" --inventory %s", inventoryPth)
 	}

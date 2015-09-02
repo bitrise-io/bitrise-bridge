@@ -11,7 +11,7 @@ import (
 	"github.com/codegangsta/cli"
 )
 
-func runWorkflow(inventoryBase64Str, configBase64Str, workflowName string) (string, string, error) {
+func performRunOrTrigger(inventoryBase64Str, configBase64Str, workflowNameOrTriggerPattern string, isUseTrigger bool) (string, string, error) {
 	// Paths
 	tempBitriseWorkDirPath, err := pathutil.NormalizedOSTempDirPath("bitrise")
 	if err != nil {
@@ -55,8 +55,12 @@ func runWorkflow(inventoryBase64Str, configBase64Str, workflowName string) (stri
 	}
 
 	// Call bitrise
-	if err := bridge.CMDBridgeDoBitriseRun(inventoryFilePath, configFilePath, workflowName); err != nil {
-		log.Debugf("cmd: `bitrise run %s --inventory %s --path %s` failed, error: %s", workflowName, inventoryFilePath, configFilePath, err)
+	if err := bridge.CMDBridgeDoBitriseRunOrTrigger(inventoryFilePath, configFilePath, workflowNameOrTriggerPattern, isUseTrigger); err != nil {
+		bitriseCommandToUse := "run"
+		if isUseTrigger {
+			bitriseCommandToUse = "trigger"
+		}
+		log.Debugf("cmd: `bitrise %s %s --inventory %s --path %s` failed, error: %s", bitriseCommandToUse, workflowNameOrTriggerPattern, inventoryFilePath, configFilePath, err)
 		return inventoryFilePath, configFilePath, err
 	}
 
@@ -77,7 +81,7 @@ func run(c *cli.Context) {
 		log.Fatal("Missing required workflow name")
 	}
 
-	if _, _, err := runWorkflow(inventoryBase64Str, configBase64Str, workflowName); err != nil {
+	if _, _, err := performRunOrTrigger(inventoryBase64Str, configBase64Str, workflowName, false); err != nil {
 		log.Fatalf("Failed to run, error: %s", err)
 	}
 }

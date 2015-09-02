@@ -7,12 +7,22 @@ var (
 		{
 			Name:    "run",
 			Aliases: []string{"r"},
-			Usage:   ".",
+			Usage:   "calls: bitrise run",
 			Action:  run,
 			Flags: []cli.Flag{
 				flInventoryData,
 				flConfigData,
 				flWorkflowName,
+			},
+		},
+		{
+			Name:   "trigger",
+			Usage:  "calls: bitrise trigger",
+			Action: trigger,
+			Flags: []cli.Flag{
+				flInventoryData,
+				flConfigData,
+				flTriggerPattern,
 			},
 		},
 	}
