@@ -1,33 +1,17 @@
 {
 	"ImportPath": "github.com/bitrise-io/bitrise-bridge",
 	"GoVersion": "go1.5",
+	"Packages": [
+		"./..."
+	],
 	"Deps": [
 		{
 			"ImportPath": "github.com/Sirupsen/logrus",
-			"Comment": "v0.8.6-25-g82c8de1",
-			"Rev": "82c8de1af23b25ba5a468d801f29077f4f483bce"
-		},
-		{
-			"ImportPath": "github.com/bitrise-io/bitrise/bitrise",
-			"Comment": "0.9.11-103-g5739093",
-			"Rev": "57390932805b57abe0f97d57612b7a3cd51159e1"
-		},
-		{
-			"ImportPath": "github.com/bitrise-io/bitrise/models",
-			"Comment": "0.9.11-103-g5739093",
-			"Rev": "57390932805b57abe0f97d57612b7a3cd51159e1"
-		},
-		{
-			"ImportPath": "github.com/bitrise-io/envman/models",
-			"Comment": "0.9.8-10-g86840cc",
-			"Rev": "86840cc7aae62ede2a7d2e019b942fda53ec56c8"
+			"Comment": "v0.8.7",
+			"Rev": "418b41d23a1bf978c06faea5313ba194650ac088"
 		},
 		{
 			"ImportPath": "github.com/bitrise-io/go-utils/cmdex",
-			"Rev": "94e015497d551764f779b62414ffbd7d2f20e699"
-		},
-		{
-			"ImportPath": "github.com/bitrise-io/go-utils/colorstring",
 			"Rev": "94e015497d551764f779b62414ffbd7d2f20e699"
 		},
 		{
@@ -39,38 +23,9 @@
 			"Rev": "94e015497d551764f779b62414ffbd7d2f20e699"
 		},
 		{
-			"ImportPath": "github.com/bitrise-io/go-utils/pointers",
-			"Rev": "94e015497d551764f779b62414ffbd7d2f20e699"
-		},
-		{
-			"ImportPath": "github.com/bitrise-io/go-utils/stringutil",
-			"Rev": "94e015497d551764f779b62414ffbd7d2f20e699"
-		},
-		{
-			"ImportPath": "github.com/bitrise-io/go-utils/versions",
-			"Rev": "94e015497d551764f779b62414ffbd7d2f20e699"
-		},
-		{
-			"ImportPath": "github.com/bitrise-io/goinp/goinp",
-			"Rev": "f4fc4388757b694d3733279ab4dcefcfc875d189"
-		},
-		{
-			"ImportPath": "github.com/bitrise-io/stepman/models",
-			"Comment": "0.9.14-1-g0307a89",
-			"Rev": "0307a89c1b563c54f59d6537aa17f75fc655cc03"
-		},
-		{
 			"ImportPath": "github.com/codegangsta/cli",
-			"Comment": "1.2.0-141-geaad6fe",
-			"Rev": "eaad6fe6bc9f5de81ed51cb34c42258c57a3615a"
-		},
-		{
-			"ImportPath": "github.com/ryanuber/go-glob",
-			"Rev": "0067a9abd927e50aed5190662702f81231413ae0"
-		},
-		{
-			"ImportPath": "gopkg.in/yaml.v2",
-			"Rev": "7ad95dd0798a40da1ccdff6dff35fd177b5edf40"
+			"Comment": "1.2.0-143-ga65b733",
+			"Rev": "a65b733b303f0055f8d324d805f393cd3e7a7904"
 		}
 	]
 }
