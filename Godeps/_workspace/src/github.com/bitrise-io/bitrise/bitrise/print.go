@@ -3,10 +3,12 @@ package bitrise
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/bitrise-io/bitrise/models"
 	"github.com/bitrise-io/go-utils/colorstring"
+	"github.com/bitrise-io/go-utils/stringutil"
 )
 
 const (
@@ -22,17 +24,24 @@ func PrintRunningWorkflow(title string) {
 }
 
 // PrintRunningStep ...
-func PrintRunningStep(title string, idx int) {
-	content := fmt.Sprintf("| (%d) %s |", idx, title)
+func PrintRunningStep(title, version string, idx int) {
+	if len(version) > 25 {
+		version = "..." + stringutil.MaxLastChars(version, 22)
+	}
+	content := fmt.Sprintf("| (%d) %s (%s) |", idx, title, version)
 	charDiff := len(content) - stepRunSummaryBoxWidthInChars
 
 	if charDiff < 0 {
 		// shorter than desired - fill with space
-		content = fmt.Sprintf("| (%d) %s%s |", idx, title, strings.Repeat(" ", -charDiff))
+		content = fmt.Sprintf("| (%d) %s (%s)%s |", idx, title, version, strings.Repeat(" ", -charDiff))
 	} else if charDiff > 0 {
 		// longer than desired - trim title
 		trimmedTitleWidth := len(title) - charDiff - 3
-		content = fmt.Sprintf("| (%d) %s... |", idx, title[0:trimmedTitleWidth])
+		if trimmedTitleWidth < 0 {
+			log.Errorf("Step Version too long, can't present title at all! : %s", version)
+		} else {
+			content = fmt.Sprintf("| (%d) %s... (%s) |", idx, title[0:trimmedTitleWidth], version)
+		}
 	}
 
 	sep := strings.Repeat("-", len(content))
@@ -166,11 +175,20 @@ func PrintSummary(buildRunResults models.BuildRunResultsModel) {
 	log.Infof("+%s+%s+%s+", strings.Repeat("-", iconBoxWidth), strings.Repeat("-", titleBoxWidth), strings.Repeat("-", timeBoxWidth))
 
 	orderedResults := buildRunResults.OrderedResults()
+	tmpTime := time.Time{}
 	for _, stepRunResult := range orderedResults {
+		tmpTime = tmpTime.Add(stepRunResult.RunTime)
 		log.Info(stepResultCell(stepRunResult))
 	}
+	runtime := tmpTime.Sub(time.Time{})
 
 	log.Infof("+%s+", strings.Repeat("-", stepRunSummaryBoxWidthInChars-2))
+
+	runtimeStr := TimeToFormattedSeconds(runtime, " sec")
+	whitespaceWidth = stepRunSummaryBoxWidthInChars - len(fmt.Sprintf("| Total runtime: %s|", runtimeStr))
+	log.Infof("| Total runtime: %s%s|", runtimeStr, strings.Repeat(" ", whitespaceWidth))
+	log.Infof("+%s+", strings.Repeat("-", stepRunSummaryBoxWidthInChars-2))
+
 	fmt.Println()
 }
 
