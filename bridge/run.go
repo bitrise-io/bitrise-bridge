@@ -22,7 +22,7 @@ import (
 // }
 
 // CMDBridgeDoBitriseRunOrTrigger ...
-func CMDBridgeDoBitriseRunOrTrigger(inventoryPth, configPth, workflowNameOrTriggerPattern string, isUseTrigger bool) error {
+func CMDBridgeDoBitriseRunOrTrigger(inventoryPth, configPth, workflowNameOrTriggerPattern string, isUseTrigger bool, workdirPath string) error {
 	logLevel := log.GetLevel().String()
 
 	bitriseCommandToUse := "run"
@@ -35,7 +35,8 @@ func CMDBridgeDoBitriseRunOrTrigger(inventoryPth, configPth, workflowNameOrTrigg
 		params = params + fmt.Sprintf(" --inventory %s", inventoryPth)
 	}
 
-	args := []string{"-do", params}
+	args := []string{"-workdir", workdirPath, "-do", params}
+	log.Infof("args: %#v", args)
 
 	return cmdex.RunCommand("cmd-bridge", args...)
 }

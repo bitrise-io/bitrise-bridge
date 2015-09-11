@@ -1,14 +1,13 @@
 package cli
 
-import (
-	"github.com/bitrise-io/bitrise/bitrise"
-	"github.com/codegangsta/cli"
-)
+import "github.com/codegangsta/cli"
 
 const (
 	// LogLevelKey ...
 	LogLevelKey      = "loglevel"
 	logLevelKeyShort = "l"
+	// LogLevelEnvKey ...
+	LogLevelEnvKey string = "LOGLEVEL"
 
 	// InventoryDataKey ...
 	InventoryDataKey      = "inventory"
@@ -24,6 +23,11 @@ const (
 
 	// TriggerPatternNameKey ...
 	TriggerPatternNameKey = "pattern"
+
+	// WorkdirPathKey ...
+	WorkdirPathKey = "workdir"
+	// WorkdirPathEnvKey ...
+	WorkdirPathEnvKey = "BITRISE_BRIDGE_WORKDIR"
 )
 
 var (
@@ -31,7 +35,7 @@ var (
 	flLogLevel = cli.StringFlag{
 		Name:   LogLevelKey + ", " + logLevelKeyShort,
 		Usage:  "Log level (options: debug, info, warn, error, fatal, panic).",
-		EnvVar: bitrise.LogLevelEnvKey,
+		EnvVar: LogLevelEnvKey,
 	}
 	flags = []cli.Flag{
 		flLogLevel,
@@ -39,12 +43,12 @@ var (
 
 	flInventoryData = cli.StringFlag{
 		Name:  InventoryDataKey + ", " + inventoryDataKeyShort,
-		Usage: "inventory/secrets data (~ content of .bitrise.secrets.yml)",
+		Usage: "inventory/secrets data in base64 (~ content of .bitrise.secrets.yml)",
 	}
 
 	flConfigData = cli.StringFlag{
 		Name:  ConfigDataKey + ", " + configDataKeyShort,
-		Usage: "config data (~ content of bitrise.yml)",
+		Usage: "config data in base64 (~ content of bitrise.yml)",
 	}
 
 	flWorkflowName = cli.StringFlag{
@@ -55,5 +59,11 @@ var (
 	flTriggerPattern = cli.StringFlag{
 		Name:  TriggerPatternNameKey,
 		Usage: "trigger pattern to pass to bitrise",
+	}
+
+	flWorkdirPath = cli.StringFlag{
+		Name:   WorkdirPathKey,
+		Usage:  "set this to bitrise as the working directory",
+		EnvVar: WorkdirPathEnvKey,
 	}
 )

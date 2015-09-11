@@ -55,25 +55,25 @@ workflows:
 	t.Log("Config:", configBase64Str)
 
 	t.Log("Perform - run")
-	_, _, err := performRunOrTrigger(inventoryBase64Str, configBase64Str, "target", false)
+	_, _, err := performRunOrTrigger(inventoryBase64Str, configBase64Str, "target", false, "/")
 	if err != nil {
 		t.Fatalf("Perform - run: %s", err)
 	}
 
 	t.Log("Perform - run without inventory")
-	_, _, err = performRunOrTrigger("", configBase64Str, "simple-success", false)
+	_, _, err = performRunOrTrigger("", configBase64Str, "simple-success", false, "")
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	t.Log("Perform - invalid workflow")
-	_, _, err = performRunOrTrigger("", configBase64Str, "does-not-exist", false)
+	_, _, err = performRunOrTrigger("", configBase64Str, "does-not-exist", false, "")
 	if err == nil {
 		t.Fatal("Should fail for invalid workflow!")
 	}
 
 	t.Log("Perform - fail-test")
-	_, _, err = performRunOrTrigger("", configBase64Str, "fail-test", false)
+	_, _, err = performRunOrTrigger("", configBase64Str, "fail-test", false, "")
 	if err == nil {
 		t.Fatal("Should fail for failing (fail-test) workflow!")
 	}
@@ -130,19 +130,19 @@ workflows:
 	t.Log("Config:", configBase64Str)
 
 	t.Log("Perform - simple OK")
-	_, _, err := performRunOrTrigger(inventoryBase64Str, configBase64Str, "trig-target", true)
+	_, _, err := performRunOrTrigger(inventoryBase64Str, configBase64Str, "trig-target", true, "")
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	t.Log("Perform - no definition")
-	_, _, err = performRunOrTrigger("", configBase64Str, "no-def", true)
+	_, _, err = performRunOrTrigger("", configBase64Str, "no-def", true, "")
 	if err == nil {
 		t.Fatal("Should fail for failing (no-def) trigger pattern!")
 	}
 
 	t.Log("Perform - fail-test")
-	_, _, err = performRunOrTrigger("", configBase64Str, "trig-fail-test", true)
+	_, _, err = performRunOrTrigger("", configBase64Str, "trig-fail-test", true, "")
 	if err == nil {
 		t.Fatal("Should fail for failing (trig-fail-test) build!")
 	}

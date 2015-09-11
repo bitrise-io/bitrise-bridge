@@ -13,6 +13,7 @@ var (
 				flInventoryData,
 				flConfigData,
 				flWorkflowName,
+				flWorkdirPath,
 			},
 		},
 		{
@@ -23,6 +24,7 @@ var (
 				flInventoryData,
 				flConfigData,
 				flTriggerPattern,
+				flWorkdirPath,
 			},
 		},
 	}

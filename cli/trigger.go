@@ -20,7 +20,7 @@ func trigger(c *cli.Context) {
 		log.Fatal("Missing required Trigger Pattern parameter")
 	}
 
-	if _, _, err := performRunOrTrigger(inventoryBase64Str, configBase64Str, triggerPattern, true); err != nil {
+	if _, _, err := performRunOrTrigger(inventoryBase64Str, configBase64Str, triggerPattern, true, c.String(WorkdirPathKey)); err != nil {
 		log.Fatalf("Failed to run, error: %s", err)
 	}
 }
