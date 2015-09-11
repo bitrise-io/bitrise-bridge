@@ -36,7 +36,6 @@ func CMDBridgeDoBitriseRunOrTrigger(inventoryPth, configPth, workflowNameOrTrigg
 	}
 
 	args := []string{"-workdir", workdirPath, "-do", params}
-	log.Infof("args: %#v", args)
 
 	return cmdex.RunCommand("cmd-bridge", args...)
 }
