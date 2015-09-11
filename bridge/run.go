@@ -30,7 +30,7 @@ func CMDBridgeDoBitriseRunOrTrigger(inventoryPth, configPth, workflowNameOrTrigg
 		bitriseCommandToUse = "trigger"
 	}
 
-	params := fmt.Sprintf("bitrise --loglevel %s %s %s --path %s", logLevel, bitriseCommandToUse, workflowNameOrTriggerPattern, configPth)
+	params := fmt.Sprintf("bitrise --loglevel %s %s %s --config %s", logLevel, bitriseCommandToUse, workflowNameOrTriggerPattern, configPth)
 	if inventoryPth != "" {
 		params = params + fmt.Sprintf(" --inventory %s", inventoryPth)
 	}
