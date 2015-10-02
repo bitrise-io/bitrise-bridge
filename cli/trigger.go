@@ -3,6 +3,7 @@ package cli
 import (
 	"log"
 
+	"github.com/bitrise-io/bitrise-bridge/bridge"
 	"github.com/codegangsta/cli"
 )
 
@@ -20,7 +21,7 @@ func trigger(c *cli.Context) {
 		log.Fatal("Missing required Trigger Pattern parameter")
 	}
 
-	if _, _, err := performRunOrTrigger(inventoryBase64Str, configBase64Str, triggerPattern, true, c.String(WorkdirPathKey)); err != nil {
+	if err := bridge.PerformRunOrTrigger(CommandHostID, inventoryBase64Str, configBase64Str, triggerPattern, true, c.String(WorkdirPathKey)); err != nil {
 		log.Fatalf("Failed to run, error: %s", err)
 	}
 }

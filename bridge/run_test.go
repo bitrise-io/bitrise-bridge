@@ -1,8 +1,15 @@
-package cli
+package bridge
 
 import (
 	"encoding/base64"
 	"testing"
+
+	"github.com/stretchr/testify/require"
+)
+
+const (
+	testCommandHostID = CommandHostIDNone
+	// testCommandHostID = CommandHostIDCmdBridge
 )
 
 func TestRun_RunMode(t *testing.T) {
@@ -55,28 +62,20 @@ workflows:
 	t.Log("Config:", configBase64Str)
 
 	t.Log("Perform - run")
-	_, _, err := performRunOrTrigger(inventoryBase64Str, configBase64Str, "target", false, "/")
-	if err != nil {
-		t.Fatalf("Perform - run: %s", err)
-	}
+	err := PerformRunOrTrigger(testCommandHostID, inventoryBase64Str, configBase64Str, "target", false, "/")
+	require.NoError(t, err)
 
 	t.Log("Perform - run without inventory")
-	_, _, err = performRunOrTrigger("", configBase64Str, "simple-success", false, "")
-	if err != nil {
-		t.Fatal(err)
-	}
+	err = PerformRunOrTrigger(testCommandHostID, "", configBase64Str, "simple-success", false, "")
+	require.NoError(t, err)
 
 	t.Log("Perform - invalid workflow")
-	_, _, err = performRunOrTrigger("", configBase64Str, "does-not-exist", false, "")
-	if err == nil {
-		t.Fatal("Should fail for invalid workflow!")
-	}
+	err = PerformRunOrTrigger(testCommandHostID, "", configBase64Str, "does-not-exist", false, "")
+	require.Error(t, err)
 
 	t.Log("Perform - fail-test")
-	_, _, err = performRunOrTrigger("", configBase64Str, "fail-test", false, "")
-	if err == nil {
-		t.Fatal("Should fail for failing (fail-test) workflow!")
-	}
+	err = PerformRunOrTrigger(testCommandHostID, "", configBase64Str, "fail-test", false, "")
+	require.Error(t, err)
 }
 
 func TestRun_TriggerMode(t *testing.T) {
@@ -130,20 +129,14 @@ workflows:
 	t.Log("Config:", configBase64Str)
 
 	t.Log("Perform - simple OK")
-	_, _, err := performRunOrTrigger(inventoryBase64Str, configBase64Str, "trig-target", true, "")
-	if err != nil {
-		t.Fatal(err)
-	}
+	err := PerformRunOrTrigger(testCommandHostID, inventoryBase64Str, configBase64Str, "trig-target", true, "")
+	require.NoError(t, err)
 
 	t.Log("Perform - no definition")
-	_, _, err = performRunOrTrigger("", configBase64Str, "no-def", true, "")
-	if err == nil {
-		t.Fatal("Should fail for failing (no-def) trigger pattern!")
-	}
+	err = PerformRunOrTrigger(testCommandHostID, "", configBase64Str, "no-def", true, "")
+	require.Error(t, err)
 
 	t.Log("Perform - fail-test")
-	_, _, err = performRunOrTrigger("", configBase64Str, "trig-fail-test", true, "")
-	if err == nil {
-		t.Fatal("Should fail for failing (trig-fail-test) build!")
-	}
+	err = PerformRunOrTrigger(testCommandHostID, "", configBase64Str, "trig-fail-test", true, "")
+	require.Error(t, err)
 }

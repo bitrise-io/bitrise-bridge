@@ -6,6 +6,7 @@ import (
 	"path"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/bitrise-io/bitrise-bridge/bridge"
 	"github.com/codegangsta/cli"
 )
 
@@ -31,6 +32,18 @@ func before(c *cli.Context) error {
 		return err
 	}
 	log.SetLevel(level)
+
+	// Command Host
+	commandHostStr := c.String(CommandHostKey)
+	if commandHostStr != "" {
+		switch commandHostStr {
+		case bridge.CommandHostIDCmdBridge, bridge.CommandHostIDNone, bridge.CommandHostIDDocker:
+			CommandHostID = commandHostStr
+		default:
+			log.Fatalf("Invalid / not supported command-host specified: %s", commandHostStr)
+		}
+	}
+	log.Infof("Command host: %s", CommandHostID)
 
 	return nil
 }

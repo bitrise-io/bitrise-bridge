@@ -1,41 +1,101 @@
 package bridge
 
 import (
+	"encoding/base64"
 	"fmt"
+	"strings"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/bitrise-io/go-utils/cmdex"
 )
 
-// // BitriseRunOrTrigger ...
-// func BitriseRunOrTrigger(inventoryPth, configPth, workflowNameOrTriggerPattern string, isUseTrigger bool) error {
-// 	logLevel := log.GetLevel().String()
-// bitriseCommandToUse := "run"
-// if isUseTrigger {
-// 	bitriseCommandToUse = "trigger"
-// }
-// 	args := []string{"--loglevel", logLevel, bitriseCommandToUse, workflowNameOrTriggerPattern, "--path", configPth}
-// 	if inventoryPth != "" {
-// 		args = append(args, "--inventory", inventoryPth)
-// 	}
-// 	return cmdex.RunCommand("bitrise", args...)
-// }
+const (
+	// CommandHostIDCmdBridge ...
+	CommandHostIDCmdBridge = "cmd-bridge"
+	// CommandHostIDNone ...
+	CommandHostIDNone = "none"
+	// CommandHostIDDocker ...
+	CommandHostIDDocker = "docker"
+)
 
-// CMDBridgeDoBitriseRunOrTrigger ...
-func CMDBridgeDoBitriseRunOrTrigger(inventoryPth, configPth, workflowNameOrTriggerPattern string, isUseTrigger bool, workdirPath string) error {
-	logLevel := log.GetLevel().String()
+// PerformRunOrTrigger ...
+func PerformRunOrTrigger(commandHostID, inventoryBase64Str, configBase64Str, workflowNameOrTriggerPattern string, isUseTrigger bool, workdirPath string) error {
+	// Decode inventory & write to file
+	if inventoryBase64Str != "" {
+		_, err := base64.StdEncoding.DecodeString(inventoryBase64Str)
+		if err != nil {
+			return fmt.Errorf("Failed to decode base 64 string, error: %s", err.Error())
+		}
+	}
 
+	// Decode bitrise config & write to file
+	_, err := base64.StdEncoding.DecodeString(configBase64Str)
+	if err != nil {
+		return fmt.Errorf("Failed to decode base64 string, error: %s", err)
+	}
+
+	// run or trigger ?
 	bitriseCommandToUse := "run"
 	if isUseTrigger {
 		bitriseCommandToUse = "trigger"
 	}
 
-	params := fmt.Sprintf("bitrise --loglevel %s %s %s --path %s", logLevel, bitriseCommandToUse, workflowNameOrTriggerPattern, configPth)
-	if inventoryPth != "" {
-		params = params + fmt.Sprintf(" --inventory %s", inventoryPth)
+	// Call bitrise
+	switch commandHostID {
+	case CommandHostIDCmdBridge:
+		if err := performRunOrTriggerWithCmdBridge(bitriseCommandToUse, inventoryBase64Str, configBase64Str, workflowNameOrTriggerPattern, workdirPath); err != nil {
+			return err
+		}
+	case CommandHostIDNone:
+		if err := performRunOrTriggerWithoutCommandHost(bitriseCommandToUse, inventoryBase64Str, configBase64Str, workflowNameOrTriggerPattern, workdirPath); err != nil {
+			return err
+		}
+	default:
+		return fmt.Errorf("Invalid / not supported commandHostID: %s", commandHostID)
 	}
 
-	args := []string{"-workdir", workdirPath, "-do", params}
+	return nil
+}
 
-	return cmdex.RunCommand("cmd-bridge", args...)
+func createBitriseCallArgs(bitriseCommandToUse, inventoryBase64, configBase64, workflowNameOrTriggerPattern string) []string {
+	logLevel := log.GetLevel().String()
+
+	retArgs := []string{
+		"--loglevel", logLevel,
+		bitriseCommandToUse, workflowNameOrTriggerPattern,
+		"--config-base64", configBase64,
+	}
+
+	if inventoryBase64 != "" {
+		retArgs = append(retArgs, "--inventory-base64", inventoryBase64)
+	}
+
+	return retArgs
+}
+
+func performRunOrTriggerWithoutCommandHost(bitriseCommandToUse, inventoryBase64, configBase64, workflowNameOrTriggerPattern, workdirPath string) error {
+	bitriseCallArgs := createBitriseCallArgs(bitriseCommandToUse, inventoryBase64, configBase64, workflowNameOrTriggerPattern)
+	log.Printf("=> (debug) bitriseCallArgs: %s", bitriseCallArgs)
+
+	if err := cmdex.RunCommandInDir(workdirPath, "bitrise", bitriseCallArgs...); err != nil {
+		log.Debugf("cmd: `bitrise %s` failed, error: %s", bitriseCallArgs)
+		return err
+	}
+
+	return nil
+}
+
+func performRunOrTriggerWithCmdBridge(bitriseCommandToUse, inventoryBase64, configBase64, workflowNameOrTriggerPattern, workdirPath string) error {
+	bitriseCallArgs := createBitriseCallArgs(bitriseCommandToUse, inventoryBase64, configBase64, workflowNameOrTriggerPattern)
+	log.Printf("=> (debug) bitriseCallArgs: %s", bitriseCallArgs)
+
+	bitriseCmdStr := fmt.Sprintf("bitrise %s", strings.Join(bitriseCallArgs, " "))
+	args := []string{"-workdir", workdirPath, "-do", bitriseCmdStr}
+
+	if err := cmdex.RunCommand("cmd-bridge", args...); err != nil {
+		log.Debugf("cmd: `%s` failed, error: %s", bitriseCmdStr)
+		return err
+	}
+
+	return nil
 }
