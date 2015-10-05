@@ -148,3 +148,16 @@ workflows:
               f.write(changelog_content)
             end
         - runner_bin: ruby
+
+  create-release-with-docker-compose:
+    steps:
+    - script:
+        title: Creating deploy
+        inputs:
+        - content: |-
+            #!/bin/bash
+            set -e
+            set -v
+
+            docker-compose build --no-cache app
+            docker-compose run --rm app bitrise run create-release
