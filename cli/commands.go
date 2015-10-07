@@ -30,6 +30,9 @@ const (
 	// TriggerPatternNameKey ...
 	TriggerPatternNameKey = "pattern"
 
+	// DockerImageIDNameKey ...
+	DockerImageIDNameKey = "docker-image-id"
+
 	// WorkdirPathKey ...
 	WorkdirPathKey = "workdir"
 	// WorkdirPathEnvKey ...
@@ -47,9 +50,14 @@ var (
 		Name:  CommandHostKey,
 		Usage: "Command host. (none, cmd-bridge [default, for compatibility], docker)",
 	}
+	flDockerImageID = cli.StringFlag{
+		Name:  DockerImageIDNameKey,
+		Usage: "docker image ID to use - only applies to command-host=docker",
+	}
 	flags = []cli.Flag{
 		flLogLevel,
 		flCommandHost,
+		flDockerImageID,
 	}
 
 	// command flags

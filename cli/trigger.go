@@ -21,7 +21,7 @@ func trigger(c *cli.Context) {
 		log.Fatal("Missing required Trigger Pattern parameter")
 	}
 
-	if err := bridge.PerformRunOrTrigger(CommandHostID, inventoryBase64Str, configBase64Str, triggerPattern, true, c.String(WorkdirPathKey)); err != nil {
+	if err := bridge.PerformRunOrTrigger(CommandHostID, CommandHostArgs, inventoryBase64Str, configBase64Str, triggerPattern, true, c.String(WorkdirPathKey)); err != nil {
 		log.Fatalf("Failed to run, error: %s", err)
 	}
 }

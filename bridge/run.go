@@ -2,6 +2,7 @@ package bridge
 
 import (
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -19,7 +20,7 @@ const (
 )
 
 // PerformRunOrTrigger ...
-func PerformRunOrTrigger(commandHostID, inventoryBase64Str, configBase64Str, workflowNameOrTriggerPattern string, isUseTrigger bool, workdirPath string) error {
+func PerformRunOrTrigger(commandHostID string, hostSpecificArgs map[string]string, inventoryBase64Str, configBase64Str, workflowNameOrTriggerPattern string, isUseTrigger bool, workdirPath string) error {
 	// Decode inventory & write to file
 	if inventoryBase64Str != "" {
 		_, err := base64.StdEncoding.DecodeString(inventoryBase64Str)
@@ -48,6 +49,10 @@ func PerformRunOrTrigger(commandHostID, inventoryBase64Str, configBase64Str, wor
 		}
 	case CommandHostIDNone:
 		if err := performRunOrTriggerWithoutCommandHost(bitriseCommandToUse, inventoryBase64Str, configBase64Str, workflowNameOrTriggerPattern, workdirPath); err != nil {
+			return err
+		}
+	case CommandHostIDDocker:
+		if err := performRunOrTriggerWithDocker(hostSpecificArgs, bitriseCommandToUse, inventoryBase64Str, configBase64Str, workflowNameOrTriggerPattern, workdirPath); err != nil {
 			return err
 		}
 	default:
@@ -79,6 +84,28 @@ func performRunOrTriggerWithoutCommandHost(bitriseCommandToUse, inventoryBase64,
 
 	if err := cmdex.RunCommandInDir(workdirPath, "bitrise", bitriseCallArgs...); err != nil {
 		log.Debugf("cmd: `bitrise %s` failed, error: %s", bitriseCallArgs)
+		return err
+	}
+
+	return nil
+}
+
+func performRunOrTriggerWithDocker(hostSpecificArgs map[string]string, bitriseCommandToUse, inventoryBase64, configBase64, workflowNameOrTriggerPattern, workdirPath string) error {
+	dockerImageToUse := hostSpecificArgs["docker-image-id"]
+	if dockerImageToUse == "" {
+		return errors.New("No docker-image-id specified")
+	}
+
+	bitriseCallArgs := createBitriseCallArgs(bitriseCommandToUse, inventoryBase64, configBase64, workflowNameOrTriggerPattern)
+	log.Printf("=> (debug) bitriseCallArgs: %s", bitriseCallArgs)
+
+	fullDockerArgs := []string{
+		"run", "--rm", dockerImageToUse, "bitrise",
+	}
+	fullDockerArgs = append(fullDockerArgs, bitriseCallArgs...)
+
+	if err := cmdex.RunCommand("docker", fullDockerArgs...); err != nil {
+		log.Debugf("cmd: `docker %s` failed, error: %s", fullDockerArgs)
 		return err
 	}
 

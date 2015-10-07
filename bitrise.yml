@@ -159,5 +159,6 @@ workflows:
             set -e
             set -v
 
-            docker-compose build --no-cache app
+            # docker-compose build --no-cache app
+            docker-compose build app
             docker-compose run --rm app bitrise run create-release

@@ -61,20 +61,22 @@ workflows:
 	configBase64Str := base64.StdEncoding.EncodeToString(configBytes)
 	t.Log("Config:", configBase64Str)
 
+	hostSpecificArgs := map[string]string{}
+
 	t.Log("Perform - run")
-	err := PerformRunOrTrigger(testCommandHostID, inventoryBase64Str, configBase64Str, "target", false, "/")
+	err := PerformRunOrTrigger(testCommandHostID, hostSpecificArgs, inventoryBase64Str, configBase64Str, "target", false, "/")
 	require.NoError(t, err)
 
 	t.Log("Perform - run without inventory")
-	err = PerformRunOrTrigger(testCommandHostID, "", configBase64Str, "simple-success", false, "")
+	err = PerformRunOrTrigger(testCommandHostID, hostSpecificArgs, "", configBase64Str, "simple-success", false, "")
 	require.NoError(t, err)
 
 	t.Log("Perform - invalid workflow")
-	err = PerformRunOrTrigger(testCommandHostID, "", configBase64Str, "does-not-exist", false, "")
+	err = PerformRunOrTrigger(testCommandHostID, hostSpecificArgs, "", configBase64Str, "does-not-exist", false, "")
 	require.Error(t, err)
 
 	t.Log("Perform - fail-test")
-	err = PerformRunOrTrigger(testCommandHostID, "", configBase64Str, "fail-test", false, "")
+	err = PerformRunOrTrigger(testCommandHostID, hostSpecificArgs, "", configBase64Str, "fail-test", false, "")
 	require.Error(t, err)
 }
 
@@ -128,15 +130,17 @@ workflows:
 	configBase64Str := base64.StdEncoding.EncodeToString(configBytes)
 	t.Log("Config:", configBase64Str)
 
+	hostSpecificArgs := map[string]string{}
+
 	t.Log("Perform - simple OK")
-	err := PerformRunOrTrigger(testCommandHostID, inventoryBase64Str, configBase64Str, "trig-target", true, "")
+	err := PerformRunOrTrigger(testCommandHostID, hostSpecificArgs, inventoryBase64Str, configBase64Str, "trig-target", true, "")
 	require.NoError(t, err)
 
 	t.Log("Perform - no definition")
-	err = PerformRunOrTrigger(testCommandHostID, "", configBase64Str, "no-def", true, "")
+	err = PerformRunOrTrigger(testCommandHostID, hostSpecificArgs, "", configBase64Str, "no-def", true, "")
 	require.Error(t, err)
 
 	t.Log("Perform - fail-test")
-	err = PerformRunOrTrigger(testCommandHostID, "", configBase64Str, "trig-fail-test", true, "")
+	err = PerformRunOrTrigger(testCommandHostID, hostSpecificArgs, "", configBase64Str, "trig-fail-test", true, "")
 	require.Error(t, err)
 }

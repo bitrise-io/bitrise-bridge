@@ -10,6 +10,11 @@ import (
 	"github.com/codegangsta/cli"
 )
 
+var (
+	// CommandHostArgs ...
+	CommandHostArgs = map[string]string{}
+)
+
 func initLogFormatter() {
 	log.SetFormatter(&log.TextFormatter{
 		FullTimestamp:   true,
@@ -45,6 +50,15 @@ func before(c *cli.Context) error {
 	}
 	log.Infof("Command host: %s", CommandHostID)
 
+	// Command Host Args
+	if CommandHostID == bridge.CommandHostIDDocker {
+		commandHostDockerImage := c.String(DockerImageIDNameKey)
+		if commandHostDockerImage != "" {
+			CommandHostArgs["docker-image-id"] = commandHostDockerImage
+		}
+	}
+	log.Infof("CommandHostArgs: %#v", CommandHostArgs)
+
 	return nil
 }
 
@@ -59,7 +73,7 @@ func Run() {
 	app := cli.NewApp()
 	app.Name = path.Base(os.Args[0])
 	app.Usage = ""
-	app.Version = "0.9.4"
+	app.Version = "0.9.5"
 
 	app.Author = ""
 	app.Email = ""
