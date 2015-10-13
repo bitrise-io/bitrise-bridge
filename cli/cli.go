@@ -48,7 +48,7 @@ func before(c *cli.Context) error {
 			log.Fatalf("Invalid / not supported command-host specified: %s", commandHostStr)
 		}
 	}
-	log.Infof("Command host: %s", CommandHostID)
+	log.Debugf("Command host: %s", CommandHostID)
 
 	// Command Host Args
 	if CommandHostID == bridge.CommandHostIDDocker {
@@ -57,7 +57,7 @@ func before(c *cli.Context) error {
 			CommandHostArgs["docker-image-id"] = commandHostDockerImage
 		}
 	}
-	log.Infof("CommandHostArgs: %#v", CommandHostArgs)
+	log.Debugf("CommandHostArgs: %#v", CommandHostArgs)
 
 	return nil
 }

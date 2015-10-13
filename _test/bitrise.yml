@@ -12,3 +12,10 @@ workflows:
             set -v
 
             echo "Hi - Test!"
+
+            #
+            uname -s
+            #
+            uname -m
+            #
+            uname -a

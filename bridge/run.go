@@ -80,7 +80,7 @@ func createBitriseCallArgs(bitriseCommandToUse, inventoryBase64, configBase64, w
 
 func performRunOrTriggerWithoutCommandHost(bitriseCommandToUse, inventoryBase64, configBase64, workflowNameOrTriggerPattern, workdirPath string) error {
 	bitriseCallArgs := createBitriseCallArgs(bitriseCommandToUse, inventoryBase64, configBase64, workflowNameOrTriggerPattern)
-	log.Printf("=> (debug) bitriseCallArgs: %s", bitriseCallArgs)
+	log.Debugf("=> (debug) bitriseCallArgs: %s", bitriseCallArgs)
 
 	if err := cmdex.RunCommandInDir(workdirPath, "bitrise", bitriseCallArgs...); err != nil {
 		log.Debugf("cmd: `bitrise %s` failed, error: %s", bitriseCallArgs)
@@ -97,7 +97,7 @@ func performRunOrTriggerWithDocker(hostSpecificArgs map[string]string, bitriseCo
 	}
 
 	bitriseCallArgs := createBitriseCallArgs(bitriseCommandToUse, inventoryBase64, configBase64, workflowNameOrTriggerPattern)
-	log.Printf("=> (debug) bitriseCallArgs: %s", bitriseCallArgs)
+	log.Debugf("=> (debug) bitriseCallArgs: %s", bitriseCallArgs)
 
 	fullDockerArgs := []string{
 		"run", "--rm", dockerImageToUse, "bitrise",
@@ -114,7 +114,7 @@ func performRunOrTriggerWithDocker(hostSpecificArgs map[string]string, bitriseCo
 
 func performRunOrTriggerWithCmdBridge(bitriseCommandToUse, inventoryBase64, configBase64, workflowNameOrTriggerPattern, workdirPath string) error {
 	bitriseCallArgs := createBitriseCallArgs(bitriseCommandToUse, inventoryBase64, configBase64, workflowNameOrTriggerPattern)
-	log.Printf("=> (debug) bitriseCallArgs: %s", bitriseCallArgs)
+	log.Debugf("=> (debug) bitriseCallArgs: %s", bitriseCallArgs)
 
 	bitriseCmdStr := fmt.Sprintf("bitrise %s", strings.Join(bitriseCallArgs, " "))
 	args := []string{"-workdir", workdirPath, "-do", bitriseCmdStr}
