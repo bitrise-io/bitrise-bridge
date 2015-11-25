@@ -61,8 +61,8 @@ var (
 	flDockerAllowAccessToDockerInContainer = cli.StringFlag{
 		Name: DockerAllowAccessToDockerInContainer,
 		Usage: "If enabled it'll share the docker binary & docker.sock socket" +
-			"with the container, and the container itself will be able to start" +
-			"and manage other Docker containers." +
+			" with the container, and the container itself will be able to start" +
+			" and manage other Docker containers." +
 			"\n" +
 			"[!] USING THIS OPTION IS ONLY ADVISED in an isolated, ephemeral, non shared VM environment," +
 			" or in case you have full control over everything running in the container!",
