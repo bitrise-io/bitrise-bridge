@@ -32,6 +32,10 @@ const (
 
 	// DockerImageIDNameKey ...
 	DockerImageIDNameKey = "docker-image-id"
+	// DockerAllowAccessToDockerInContainer ...
+	DockerAllowAccessToDockerInContainer = "docker-allow-access-to-docker-in-container"
+	// DockerAllowAccessToDockerInContainerEnvKey ...
+	DockerAllowAccessToDockerInContainerEnvKey = "DOCKER_ALLOW_ACCESS_TO_DOCKER_IN_CONTAINER"
 
 	// WorkdirPathKey ...
 	WorkdirPathKey = "workdir"
@@ -54,10 +58,21 @@ var (
 		Name:  DockerImageIDNameKey,
 		Usage: "docker image ID to use - only applies to command-host=docker",
 	}
+	flDockerAllowAccessToDockerInContainer = cli.StringFlag{
+		Name: DockerAllowAccessToDockerInContainer,
+		Usage: "If enabled it'll share the docker binary & docker.sock socket" +
+			"with the container, and the container itself will be able to start" +
+			"and manage other Docker containers." +
+			"\n" +
+			"[!] USING THIS OPTION IS ONLY ADVISED in an isolated, ephemeral, non shared VM environment," +
+			" or in case you have full control over everything running in the container!",
+		EnvVar: DockerAllowAccessToDockerInContainerEnvKey,
+	}
 	flags = []cli.Flag{
 		flLogLevel,
 		flCommandHost,
 		flDockerImageID,
+		flDockerAllowAccessToDockerInContainer,
 	}
 
 	// command flags

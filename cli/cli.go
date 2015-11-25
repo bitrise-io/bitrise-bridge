@@ -56,6 +56,10 @@ func before(c *cli.Context) error {
 		if commandHostDockerImage != "" {
 			CommandHostArgs["docker-image-id"] = commandHostDockerImage
 		}
+		commandHostDockerAllowAccessToDockerInContainer := c.String(DockerAllowAccessToDockerInContainer)
+		if commandHostDockerAllowAccessToDockerInContainer != "" {
+			CommandHostArgs["docker-allow-access-to-docker-in-container"] = commandHostDockerAllowAccessToDockerInContainer
+		}
 	}
 	log.Debugf("CommandHostArgs: %#v", CommandHostArgs)
 

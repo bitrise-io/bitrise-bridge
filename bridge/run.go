@@ -8,6 +8,7 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/bitrise-io/go-utils/cmdex"
+	"github.com/bitrise-io/go-utils/parseutil"
 )
 
 const (
@@ -91,17 +92,44 @@ func performRunOrTriggerWithoutCommandHost(bitriseCommandToUse, inventoryBase64,
 }
 
 func performRunOrTriggerWithDocker(hostSpecificArgs map[string]string, bitriseCommandToUse, inventoryBase64, configBase64, workflowNameOrTriggerPattern, workdirPath string) error {
-	dockerImageToUse := hostSpecificArgs["docker-image-id"]
-	if dockerImageToUse == "" {
+	dockerParamImageToUse := hostSpecificArgs["docker-image-id"]
+	if dockerParamImageToUse == "" {
 		return errors.New("No docker-image-id specified")
+	}
+	dockerParamIsAllowAccessToDockerInContainer := false
+	dockerParamIsAllowAccessToDockerInContainerParamStr := hostSpecificArgs["docker-allow-access-to-docker-in-container"]
+	if dockerParamIsAllowAccessToDockerInContainerParamStr != "" {
+		val, err := parseutil.ParseBool(dockerParamIsAllowAccessToDockerInContainerParamStr)
+		if err != nil {
+			log.Warnf("Invalid parameter 'docker-allow-access-to-docker-in-container': %s", dockerParamIsAllowAccessToDockerInContainerParamStr)
+			log.Warn("=> Ignoring the parameter")
+		} else {
+			dockerParamIsAllowAccessToDockerInContainer = val
+		}
 	}
 
 	bitriseCallArgs := createBitriseCallArgs(bitriseCommandToUse, inventoryBase64, configBase64, workflowNameOrTriggerPattern)
 	log.Debugf("=> (debug) bitriseCallArgs: %s", bitriseCallArgs)
 
 	fullDockerArgs := []string{
-		"run", "--rm", dockerImageToUse, "bitrise",
+		"run", "--rm",
 	}
+	if dockerParamIsAllowAccessToDockerInContainer {
+		// mount the docker.sock socker & the docker binary as volumes, to make it
+		//  accessible inside the container
+		dockerPth, err := cmdex.RunCommandAndReturnStdout("which", "docker")
+		if err != nil || dockerPth == "" {
+			return errors.New("Failed to determin docker binary path; required for the 'docker-allow-access-to-docker-in-container' option")
+		}
+		fullDockerArgs = append(fullDockerArgs,
+			"-v", "/var/run/docker.sock:/var/run/docker.sock",
+			"-v", fmt.Sprintf("%s:%s", dockerPth, "/bin/docker"),
+		)
+	}
+	// these are the docker specific params
+	fullDockerArgs = append(fullDockerArgs, dockerParamImageToUse)
+	// append Bitrise specific params
+	fullDockerArgs = append(fullDockerArgs, "bitrise")
 	fullDockerArgs = append(fullDockerArgs, bitriseCallArgs...)
 
 	if err := cmdex.RunCommand("docker", fullDockerArgs...); err != nil {
