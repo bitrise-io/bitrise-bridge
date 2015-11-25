@@ -60,7 +60,8 @@ var (
 	}
 	flDockerAllowAccessToDockerInContainer = cli.StringFlag{
 		Name: DockerAllowAccessToDockerInContainer,
-		Usage: "If enabled it'll share the docker binary & docker.sock socket" +
+		Usage: "If enabled (you have to pass the value 'true' to this option, or set the value of the related Environment Variable to 'true')" +
+			" it'll share the docker binary & docker.sock socket" +
 			" with the container, and the container itself will be able to start" +
 			" and manage other Docker containers." +
 			"\n" +
