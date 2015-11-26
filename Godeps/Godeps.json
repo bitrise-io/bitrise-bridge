@@ -15,6 +15,10 @@
 			"Rev": "4d4d681f3b478115c054e0d9b6ea6e378e25b794"
 		},
 		{
+			"ImportPath": "github.com/bitrise-io/go-utils/fileutil",
+			"Rev": "4d4d681f3b478115c054e0d9b6ea6e378e25b794"
+		},
+		{
 			"ImportPath": "github.com/bitrise-io/go-utils/parseutil",
 			"Rev": "4d4d681f3b478115c054e0d9b6ea6e378e25b794"
 		},
