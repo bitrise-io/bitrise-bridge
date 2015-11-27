@@ -20,7 +20,7 @@ func run(c *cli.Context) {
 		log.Fatal("Missing required workflow name")
 	}
 
-	if err := bridge.PerformRunOrTrigger(CommandHostID, CommandHostArgs, inventoryBase64Str, configBase64Str, workflowName, false, c.String(WorkdirPathKey)); err != nil {
+	if err := bridge.PerformRunOrTrigger(CommandHostID, BridgeConfigs, inventoryBase64Str, configBase64Str, workflowName, false, c.String(WorkdirPathKey)); err != nil {
 		log.Fatalf("Failed to run, error: %s", err)
 	}
 }

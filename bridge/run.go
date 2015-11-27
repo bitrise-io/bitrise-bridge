@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/bitrise-io/bitrise-bridge/config"
 	"github.com/bitrise-io/go-utils/cmdex"
-	"github.com/bitrise-io/go-utils/parseutil"
 )
 
 const (
@@ -21,7 +21,7 @@ const (
 )
 
 // PerformRunOrTrigger ...
-func PerformRunOrTrigger(commandHostID string, hostSpecificArgs map[string]string, inventoryBase64Str, configBase64Str, workflowNameOrTriggerPattern string, isUseTrigger bool, workdirPath string) error {
+func PerformRunOrTrigger(commandHostID string, bridgeConfig config.Model, inventoryBase64Str, configBase64Str, workflowNameOrTriggerPattern string, isUseTrigger bool, workdirPath string) error {
 	// Decode inventory & write to file
 	if inventoryBase64Str != "" {
 		_, err := base64.StdEncoding.DecodeString(inventoryBase64Str)
@@ -53,7 +53,7 @@ func PerformRunOrTrigger(commandHostID string, hostSpecificArgs map[string]strin
 			return err
 		}
 	case CommandHostIDDocker:
-		if err := performRunOrTriggerWithDocker(hostSpecificArgs, bitriseCommandToUse, inventoryBase64Str, configBase64Str, workflowNameOrTriggerPattern, workdirPath); err != nil {
+		if err := performRunOrTriggerWithDocker(bridgeConfig, bitriseCommandToUse, inventoryBase64Str, configBase64Str, workflowNameOrTriggerPattern, workdirPath); err != nil {
 			return err
 		}
 	default:
@@ -91,22 +91,12 @@ func performRunOrTriggerWithoutCommandHost(bitriseCommandToUse, inventoryBase64,
 	return nil
 }
 
-func performRunOrTriggerWithDocker(hostSpecificArgs map[string]string, bitriseCommandToUse, inventoryBase64, configBase64, workflowNameOrTriggerPattern, workdirPath string) error {
-	dockerParamImageToUse := hostSpecificArgs["docker-image-id"]
+func performRunOrTriggerWithDocker(bridgeConfig config.Model, bitriseCommandToUse, inventoryBase64, configBase64, workflowNameOrTriggerPattern, workdirPath string) error {
+	dockerParamImageToUse := bridgeConfig.Docker.Image
 	if dockerParamImageToUse == "" {
 		return errors.New("No docker-image-id specified")
 	}
-	dockerParamIsAllowAccessToDockerInContainer := false
-	dockerParamIsAllowAccessToDockerInContainerParamStr := hostSpecificArgs["docker-allow-access-to-docker-in-container"]
-	if dockerParamIsAllowAccessToDockerInContainerParamStr != "" {
-		val, err := parseutil.ParseBool(dockerParamIsAllowAccessToDockerInContainerParamStr)
-		if err != nil {
-			log.Warnf("Invalid parameter 'docker-allow-access-to-docker-in-container': %s", dockerParamIsAllowAccessToDockerInContainerParamStr)
-			log.Warn("=> Ignoring the parameter")
-		} else {
-			dockerParamIsAllowAccessToDockerInContainer = val
-		}
-	}
+	dockerParamIsAllowAccessToDockerInContainer := bridgeConfig.Docker.IsAllowAccessToDockerInContainer
 
 	bitriseCallArgs := createBitriseCallArgs(bitriseCommandToUse, inventoryBase64, configBase64, workflowNameOrTriggerPattern)
 	log.Debugf("=> (debug) bitriseCallArgs: %s", bitriseCallArgs)
@@ -126,11 +116,18 @@ func performRunOrTriggerWithDocker(hostSpecificArgs map[string]string, bitriseCo
 			"-v", fmt.Sprintf("%s:%s", dockerPth, "/bin/docker"),
 		)
 	}
+	if len(bridgeConfig.Docker.Volumes) > 0 {
+		for _, aVolDef := range bridgeConfig.Docker.Volumes {
+			fullDockerArgs = append(fullDockerArgs, "-v", aVolDef)
+		}
+	}
 	// these are the docker specific params
 	fullDockerArgs = append(fullDockerArgs, dockerParamImageToUse)
 	// append Bitrise specific params
 	fullDockerArgs = append(fullDockerArgs, "bitrise")
 	fullDockerArgs = append(fullDockerArgs, bitriseCallArgs...)
+
+	log.Debugf("fullDockerArgs: %#v", fullDockerArgs)
 
 	if err := cmdex.RunCommand("docker", fullDockerArgs...); err != nil {
 		log.Debugf("cmd: `docker %s` failed, error: %s", fullDockerArgs)
