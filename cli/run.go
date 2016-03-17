@@ -2,7 +2,7 @@ package cli
 
 import (
 	log "github.com/Sirupsen/logrus"
-	"github.com/bitrise-io/bitrise-bridge/bridge"
+	"github.com/bitrise-tools/bitrise-bridge/bridge"
 	"github.com/codegangsta/cli"
 )
 

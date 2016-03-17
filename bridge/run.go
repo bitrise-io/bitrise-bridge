@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/bitrise-io/bitrise-bridge/config"
 	"github.com/bitrise-io/go-utils/cmdex"
+	"github.com/bitrise-tools/bitrise-bridge/config"
 )
 
 const (
@@ -22,7 +22,7 @@ const (
 
 // PerformRunOrTrigger ...
 func PerformRunOrTrigger(commandHostID string, bridgeConfig config.Model, inventoryBase64Str, configBase64Str, workflowNameOrTriggerPattern string, isUseTrigger bool, workdirPath string) error {
-	// Decode inventory & write to file
+	// Decode inventory - for error/encoding check
 	if inventoryBase64Str != "" {
 		_, err := base64.StdEncoding.DecodeString(inventoryBase64Str)
 		if err != nil {
@@ -30,7 +30,7 @@ func PerformRunOrTrigger(commandHostID string, bridgeConfig config.Model, invent
 		}
 	}
 
-	// Decode bitrise config & write to file
+	// Decode bitrise config - for error/encoding check
 	_, err := base64.StdEncoding.DecodeString(configBase64Str)
 	if err != nil {
 		return fmt.Errorf("Failed to decode base64 string, error: %s", err)

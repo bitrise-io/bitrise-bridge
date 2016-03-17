@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"testing"
 
-	"github.com/bitrise-io/bitrise-bridge/config"
+	"github.com/bitrise-tools/bitrise-bridge/config"
 	"github.com/stretchr/testify/require"
 )
 

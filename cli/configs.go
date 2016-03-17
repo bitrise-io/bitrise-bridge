@@ -1,6 +1,6 @@
 package cli
 
-import "github.com/bitrise-io/bitrise-bridge/bridge"
+import "github.com/bitrise-tools/bitrise-bridge/bridge"
 
 var (
 	// CommandHostID ...
