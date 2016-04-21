@@ -26,10 +26,10 @@ RUN mkdir -p /go/src /go/bin && chmod -R 777 /go
 ENV GOPATH /go
 ENV PATH /go/bin:$PATH
 
-RUN mkdir -p /go/src/github.com/bitrise-io/$PROJ_NAME
-COPY . /go/src/github.com/bitrise-io/$PROJ_NAME
+RUN mkdir -p /go/src/github.com/bitrise-tools/$PROJ_NAME
+COPY . /go/src/github.com/bitrise-tools/$PROJ_NAME
 
-WORKDIR /go/src/github.com/bitrise-io/$PROJ_NAME
+WORKDIR /go/src/github.com/bitrise-tools/$PROJ_NAME
 # godep
 RUN go get -u github.com/tools/godep
 RUN godep restore
