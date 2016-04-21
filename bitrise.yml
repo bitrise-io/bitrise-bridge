@@ -1,4 +1,4 @@
-format_version: 1.0.0
+format_version: 1.1.0
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 
 app:
@@ -15,8 +15,7 @@ workflows:
         inputs:
         - content: |-
             #!/bin/bash
-            set -e
-            set -x
+            set -ex
 
             # Install dependencies
             go get -u github.com/tools/godep
@@ -26,9 +25,6 @@ workflows:
 
             # Go lint
             go get -u github.com/golang/lint/golint
-
-            # Go Vet
-            go get -u golang.org/x/tools/cmd/vet
 
   _test:
     steps:
@@ -43,15 +39,24 @@ workflows:
     - script:
         title: Go Test
         inputs:
-        - content: go test $GOLIST_WITHOUT_VENDOR
+        - content: |-
+            #!/bin/bash
+            set -ex
+            go test $GOLIST_WITHOUT_VENDOR
     - script:
         title: Go Vet
         inputs:
-        - content: go vet $GOLIST_WITHOUT_VENDOR
+        - content: |-
+            #!/bin/bash
+            set -ex
+            go vet $GOLIST_WITHOUT_VENDOR
     - script:
         title: Err check
         inputs:
-        - content: errcheck -asserts=true -blank=true $GOLIST_WITHOUT_VENDOR
+        - content: |-
+            #!/bin/bash
+            set -ex
+            errcheck -asserts=true -blank=true $GOLIST_WITHOUT_VENDOR
     - script:
         title: Go Lint
         inputs:
@@ -78,8 +83,7 @@ workflows:
         inputs:
         - content: |-
             #!/bin/bash
-            set -v
-            set -e
+            set -ex
 
             go install
 
@@ -90,8 +94,8 @@ workflows:
         inputs:
         - content: |-
             #!/bin/bash
-            set -v
-            set -e
+            set -ex
+
             go get -u ./...
             rm -rf ./Godeps
             godep save ./...
@@ -128,8 +132,8 @@ workflows:
         inputs:
         - content: |-
             #!/bin/bash
-            set -v
-            set -e
+            set -ex
+
             if [ -f _bin/tmpbin ] ; then
               rm _bin/tmpbin
             fi
@@ -162,8 +166,7 @@ workflows:
         inputs:
         - content: |-
             #!/bin/bash
-            set -e
-            set -v
+            set -ex
 
             docker-compose build --no-cache app
             # docker-compose build app
