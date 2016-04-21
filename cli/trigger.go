@@ -1,7 +1,10 @@
 package cli
 
 import (
-	"log"
+	"os"
+
+	log "github.com/Sirupsen/logrus"
+	"github.com/bitrise-io/go-utils/errorutil"
 
 	"github.com/bitrise-tools/bitrise-bridge/bridge"
 	"github.com/codegangsta/cli"
@@ -22,6 +25,9 @@ func trigger(c *cli.Context) {
 	}
 
 	if err := bridge.PerformRunOrTrigger(CommandHostID, BridgeConfigs, inventoryBase64Str, configBase64Str, triggerPattern, true, c.String(WorkdirPathKey)); err != nil {
-		log.Fatalf("Failed to run, error: %s", err)
+		if !errorutil.IsExitStatusError(err) {
+			log.Errorf("Failed to trigger, error: %s", err)
+		}
+		os.Exit(1)
 	}
 }
