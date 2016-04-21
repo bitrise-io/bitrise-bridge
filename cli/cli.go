@@ -6,10 +6,10 @@ import (
 	"path"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/bitrise-tools/bitrise-bridge/bridge"
-	"github.com/bitrise-tools/bitrise-bridge/config"
 	"github.com/bitrise-io/go-utils/parseutil"
 	"github.com/bitrise-io/go-utils/pathutil"
+	"github.com/bitrise-tools/bitrise-bridge/bridge"
+	"github.com/bitrise-tools/bitrise-bridge/config"
 	"github.com/codegangsta/cli"
 )
 
@@ -99,7 +99,7 @@ func Run() {
 	app := cli.NewApp()
 	app.Name = path.Base(os.Args[0])
 	app.Usage = ""
-	app.Version = "0.9.7"
+	app.Version = "0.9.8"
 
 	app.Author = ""
 	app.Email = ""
