@@ -1,6 +1,10 @@
 format_version: 1.0.0
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 
+trigger_map:
+- pattern: "t/1"
+  workflow: test
+
 workflows:
   test:
     steps:
@@ -19,3 +23,5 @@ workflows:
             uname -m
             #
             uname -a
+
+            exit 0
