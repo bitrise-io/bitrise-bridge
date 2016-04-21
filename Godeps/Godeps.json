@@ -1,34 +1,39 @@
 {
 	"ImportPath": "github.com/bitrise-tools/bitrise-bridge",
 	"GoVersion": "go1.6",
+	"GodepVersion": "v62",
 	"Packages": [
 		"./..."
 	],
 	"Deps": [
 		{
 			"ImportPath": "github.com/Sirupsen/logrus",
-			"Comment": "v0.10.0",
-			"Rev": "4b6ea7319e214d98c938f12692336f7ca9348d6b"
+			"Comment": "v0.10.0-14-g081307d",
+			"Rev": "081307d9bc1364753142d5962fc1d795c742baaf"
 		},
 		{
 			"ImportPath": "github.com/bitrise-io/go-utils/cmdex",
-			"Rev": "5f0e17d02f0d981841eb1dbf312b6b97921be376"
+			"Rev": "c9b453855ddeea6c2ea5875d6a44284979cf2600"
+		},
+		{
+			"ImportPath": "github.com/bitrise-io/go-utils/errorutil",
+			"Rev": "c9b453855ddeea6c2ea5875d6a44284979cf2600"
 		},
 		{
 			"ImportPath": "github.com/bitrise-io/go-utils/fileutil",
-			"Rev": "5f0e17d02f0d981841eb1dbf312b6b97921be376"
+			"Rev": "c9b453855ddeea6c2ea5875d6a44284979cf2600"
 		},
 		{
 			"ImportPath": "github.com/bitrise-io/go-utils/parseutil",
-			"Rev": "5f0e17d02f0d981841eb1dbf312b6b97921be376"
+			"Rev": "c9b453855ddeea6c2ea5875d6a44284979cf2600"
 		},
 		{
 			"ImportPath": "github.com/bitrise-io/go-utils/pathutil",
-			"Rev": "5f0e17d02f0d981841eb1dbf312b6b97921be376"
+			"Rev": "c9b453855ddeea6c2ea5875d6a44284979cf2600"
 		},
 		{
 			"ImportPath": "github.com/bitrise-io/go-utils/pointers",
-			"Rev": "5f0e17d02f0d981841eb1dbf312b6b97921be376"
+			"Rev": "c9b453855ddeea6c2ea5875d6a44284979cf2600"
 		},
 		{
 			"ImportPath": "github.com/codegangsta/cli",
