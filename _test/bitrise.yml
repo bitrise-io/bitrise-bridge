@@ -12,8 +12,7 @@ workflows:
         inputs:
         - content: |-
             #!/bin/bash
-            set -e
-            set -v
+            set -ex
 
             echo "Hi - Test!"
 

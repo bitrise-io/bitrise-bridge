@@ -19,6 +19,10 @@ type DockerConfigModel struct {
 	// IsAllowAccessToDockerInContainer
 	//  shares the docker socker & docker binary with the container
 	IsAllowAccessToDockerInContainer bool `json:"allow_access_to_docker_in_container"`
+	// AdditionalRunArguments
+	//  additional arguments for the `docker run .. ` command,
+	//  appended (!) after other arguments (e.g. volumes)
+	AdditionalRunArguments []string `json:"additional_run_arguments"`
 }
 
 // Model ...
