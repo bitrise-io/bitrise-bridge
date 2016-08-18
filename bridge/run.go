@@ -121,6 +121,9 @@ func performRunOrTriggerWithDocker(bridgeConfig config.Model, bitriseCommandToUs
 			fullDockerArgs = append(fullDockerArgs, "-v", aVolDef)
 		}
 	}
+	if len(bridgeConfig.Docker.AdditionalRunArguments) > 0 {
+		fullDockerArgs = append(fullDockerArgs, bridgeConfig.Docker.AdditionalRunArguments...)
+	}
 	// these are the docker specific params
 	fullDockerArgs = append(fullDockerArgs, dockerParamImageToUse)
 	// append Bitrise specific params
