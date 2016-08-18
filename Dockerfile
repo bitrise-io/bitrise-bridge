@@ -8,11 +8,11 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -y install git mercurial curl rsync r
 
 #
 # Install Bitrise CLI
-RUN curl -L https://github.com/bitrise-io/bitrise/releases/download/1.3.2/bitrise-$(uname -s)-$(uname -m) > /usr/local/bin/bitrise
+RUN curl -L https://github.com/bitrise-io/bitrise/releases/download/1.3.7/bitrise-$(uname -s)-$(uname -m) > /usr/local/bin/bitrise
 RUN chmod +x /usr/local/bin/bitrise
-RUN bitrise setup --minimal
+RUN bitrise setup
 
-# Install required (testing) tools
+# Pre-install required (testing) tools
 #  Install dependencies
 RUN go get -u github.com/tools/godep
 #  Check for unhandled errors
@@ -30,9 +30,6 @@ RUN mkdir -p /go/src/github.com/bitrise-tools/$PROJ_NAME
 COPY . /go/src/github.com/bitrise-tools/$PROJ_NAME
 
 WORKDIR /go/src/github.com/bitrise-tools/$PROJ_NAME
-# godep
-RUN go get -u github.com/tools/godep
-RUN godep restore
 # install
 RUN go install
 
