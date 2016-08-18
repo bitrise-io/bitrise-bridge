@@ -1,4 +1,4 @@
-FROM golang:1.6.1-wheezy
+FROM golang:1.7-wheezy
 
 ENV PROJ_NAME bitrise-bridge
 
