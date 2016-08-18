@@ -17,9 +17,6 @@ workflows:
             #!/bin/bash
             set -ex
 
-            # Install dependencies
-            go get -u github.com/tools/godep
-
             # Check for unhandled errors
             go get -u github.com/kisielk/errcheck
 
@@ -95,9 +92,17 @@ workflows:
         - content: |-
             #!/bin/bash
             set -ex
-
-            go get -u ./...
+            # Install dependencies
+            go get -u github.com/tools/godep
+            # Cleanup
             rm -rf ./Godeps
+            rm -rf ./vendor
+            # Go get deps
+            go get -u ./...
+            go get golang.org/x/sys/unix
+            go get github.com/davecgh/go-spew/spew
+            go get github.com/pmezard/go-difflib/difflib
+            # save
             godep save ./...
 
   ci:
