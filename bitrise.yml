@@ -70,6 +70,22 @@ workflows:
                 exit 1
               fi
             done <<< "$GOLIST_WITHOUT_VENDOR"
+    - script:
+        title: Integration Test
+        inputs:
+        - content: |-
+            #!/bin/bash
+            set -ex
+            go build -o _tmp/test-bin
+
+            # Run with workflow param
+            _tmp/test-bin --command-host=none run -c Zm9ybWF0X3ZlcnNpb246IDEuMC4wDQpkZWZhdWx0X3N0ZXBfbGliX3NvdXJjZTogaHR0cHM6Ly9naXRodWIuY29tL2JpdHJpc2UtaW8vYml0cmlzZS1zdGVwbGliLmdpdA0KDQp0cmlnZ2VyX21hcDoNCi0gcGF0dGVybjogInQvMSINCiAgd29ya2Zsb3c6IHRlc3QNCg0Kd29ya2Zsb3dzOg0KICB0ZXN0Og0KICAgIHN0ZXBzOg0KICAgIC0gc2NyaXB0Og0KICAgICAgICBpbnB1dHM6DQogICAgICAgIC0gY29udGVudDogfC0NCiAgICAgICAgICAgICMhL2Jpbi9iYXNoDQogICAgICAgICAgICBzZXQgLWV4DQoNCiAgICAgICAgICAgIGVjaG8gIkhpIC0gVGVzdCEiDQoNCiAgICAgICAgICAgICMNCiAgICAgICAgICAgIHVuYW1lIC1zDQogICAgICAgICAgICAjDQogICAgICAgICAgICB1bmFtZSAtbQ0KICAgICAgICAgICAgIw0KICAgICAgICAgICAgdW5hbWUgLWENCg0KICAgICAgICAgICAgZXhpdCAwDQo= --workflow test
+
+            # Run with JSON (base64) param
+            _tmp/test-bin --command-host=none run -c Zm9ybWF0X3ZlcnNpb246IDEuMC4wDQpkZWZhdWx0X3N0ZXBfbGliX3NvdXJjZTogaHR0cHM6Ly9naXRodWIuY29tL2JpdHJpc2UtaW8vYml0cmlzZS1zdGVwbGliLmdpdA0KDQp0cmlnZ2VyX21hcDoNCi0gcGF0dGVybjogInQvMSINCiAgd29ya2Zsb3c6IHRlc3QNCg0Kd29ya2Zsb3dzOg0KICB0ZXN0Og0KICAgIHN0ZXBzOg0KICAgIC0gc2NyaXB0Og0KICAgICAgICBpbnB1dHM6DQogICAgICAgIC0gY29udGVudDogfC0NCiAgICAgICAgICAgICMhL2Jpbi9iYXNoDQogICAgICAgICAgICBzZXQgLWV4DQoNCiAgICAgICAgICAgIGVjaG8gIkhpIC0gVGVzdCEiDQoNCiAgICAgICAgICAgICMNCiAgICAgICAgICAgIHVuYW1lIC1zDQogICAgICAgICAgICAjDQogICAgICAgICAgICB1bmFtZSAtbQ0KICAgICAgICAgICAgIw0KICAgICAgICAgICAgdW5hbWUgLWENCg0KICAgICAgICAgICAgZXhpdCAwDQo= --json-params-base64 eyJ3b3JrZmxvdyI6InRlc3QifQ==
+
+            # Trigger with workflow param
+            _tmp/test-bin --command-host=none trigger -c Zm9ybWF0X3ZlcnNpb246IDEuMC4wDQpkZWZhdWx0X3N0ZXBfbGliX3NvdXJjZTogaHR0cHM6Ly9naXRodWIuY29tL2JpdHJpc2UtaW8vYml0cmlzZS1zdGVwbGliLmdpdA0KDQp0cmlnZ2VyX21hcDoNCi0gcGF0dGVybjogInQvMSINCiAgd29ya2Zsb3c6IHRlc3QNCg0Kd29ya2Zsb3dzOg0KICB0ZXN0Og0KICAgIHN0ZXBzOg0KICAgIC0gc2NyaXB0Og0KICAgICAgICBpbnB1dHM6DQogICAgICAgIC0gY29udGVudDogfC0NCiAgICAgICAgICAgICMhL2Jpbi9iYXNoDQogICAgICAgICAgICBzZXQgLWV4DQoNCiAgICAgICAgICAgIGVjaG8gIkhpIC0gVGVzdCEiDQoNCiAgICAgICAgICAgICMNCiAgICAgICAgICAgIHVuYW1lIC1zDQogICAgICAgICAgICAjDQogICAgICAgICAgICB1bmFtZSAtbQ0KICAgICAgICAgICAgIw0KICAgICAgICAgICAgdW5hbWUgLWENCg0KICAgICAgICAgICAgZXhpdCAwDQo= --pattern t/1
 
   install:
     before_run:
@@ -81,7 +97,6 @@ workflows:
         - content: |-
             #!/bin/bash
             set -ex
-
             go install
 
   godeps-update:
