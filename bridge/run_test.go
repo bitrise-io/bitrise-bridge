@@ -69,7 +69,7 @@ workflows:
 		// workflow param
 		require.NoError(t, PerformRunOrTrigger(testCommandHostID, config.Model{}, inventoryBase64Str, configBase64Str,
 			"", "target", false, "/"))
-		// run JSON param
+		// JSON param
 		require.NoError(t, PerformRunOrTrigger(testCommandHostID, config.Model{}, inventoryBase64Str, configBase64Str,
 			stringBase64Convert(`{"workflow":"target"}`), "", false, "/"))
 	}
@@ -79,21 +79,33 @@ workflows:
 		// workflow param
 		require.NoError(t, PerformRunOrTrigger(testCommandHostID, config.Model{}, "", configBase64Str,
 			"", "simple-success", false, ""))
-		// run JSON param
+		// JSON param
 		require.NoError(t, PerformRunOrTrigger(testCommandHostID, config.Model{}, "", configBase64Str,
 			stringBase64Convert(`{"workflow":"simple-success"}`), "", false, ""))
 	}
 
 	t.Log("Perform - invalid workflow")
 	{
-		err := PerformRunOrTrigger(testCommandHostID, config.Model{}, "", configBase64Str, "", "does-not-exist", false, "")
-		require.Error(t, err)
+		// workflow param
+		require.EqualError(t, PerformRunOrTrigger(testCommandHostID, config.Model{}, "", configBase64Str,
+			"", "does-not-exist", false, ""),
+			"exit status 1")
+		// JSON param
+		require.EqualError(t, PerformRunOrTrigger(testCommandHostID, config.Model{}, "", configBase64Str,
+			stringBase64Convert(`{"workflow":"does-not-exist"}`), "", false, ""),
+			"exit status 1")
 	}
 
 	t.Log("Perform - fail-test")
 	{
-		err := PerformRunOrTrigger(testCommandHostID, config.Model{}, "", configBase64Str, "", "fail-test", false, "")
-		require.Error(t, err)
+		// workflow param
+		require.EqualError(t, PerformRunOrTrigger(testCommandHostID, config.Model{}, "", configBase64Str,
+			"", "fail-test", false, ""),
+			"exit status 1")
+		// JSON param
+		require.EqualError(t, PerformRunOrTrigger(testCommandHostID, config.Model{}, "", configBase64Str,
+			stringBase64Convert(`{"workflow":"fail-test"}`), "", false, ""),
+			"exit status 1")
 	}
 }
 
@@ -149,19 +161,35 @@ workflows:
 
 	t.Log("Perform - simple OK")
 	{
-		err := PerformRunOrTrigger(testCommandHostID, config.Model{}, inventoryBase64Str, configBase64Str, "", "trig-target", true, "")
-		require.NoError(t, err)
+		// pattern param
+		require.NoError(t, PerformRunOrTrigger(testCommandHostID, config.Model{}, inventoryBase64Str, configBase64Str,
+			"", "trig-target", true, ""))
+		// JSON param
+		require.NoError(t, PerformRunOrTrigger(testCommandHostID, config.Model{}, inventoryBase64Str, configBase64Str,
+			stringBase64Convert(`{"pattern":"trig-target"}`), "", true, ""))
 	}
 
 	t.Log("Perform - no definition")
 	{
-		err := PerformRunOrTrigger(testCommandHostID, config.Model{}, "", configBase64Str, "", "no-def", true, "")
-		require.Error(t, err)
+		// pattern param
+		require.EqualError(t, PerformRunOrTrigger(testCommandHostID, config.Model{}, "", configBase64Str,
+			"", "no-def", true, ""),
+			"exit status 1")
+		// JSON param
+		require.EqualError(t, PerformRunOrTrigger(testCommandHostID, config.Model{}, "", configBase64Str,
+			stringBase64Convert(`{"pattern":"no-def"}`), "", true, ""),
+			"exit status 1")
 	}
 
 	t.Log("Perform - fail-test")
 	{
-		err := PerformRunOrTrigger(testCommandHostID, config.Model{}, "", configBase64Str, "", "trig-fail-test", true, "")
-		require.Error(t, err)
+		// pattern param
+		require.EqualError(t, PerformRunOrTrigger(testCommandHostID, config.Model{}, "", configBase64Str,
+			"", "trig-fail-test", true, ""),
+			"exit status 1")
+		// JSON param
+		require.EqualError(t, PerformRunOrTrigger(testCommandHostID, config.Model{}, "", configBase64Str,
+			stringBase64Convert(`{"pattern":"trig-fail-test"}`), "", true, ""),
+			"exit status 1")
 	}
 }
