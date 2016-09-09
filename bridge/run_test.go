@@ -13,6 +13,10 @@ const (
 	// testCommandHostID = CommandHostIDCmdBridge
 )
 
+func stringBase64Convert(strToConvert string) string {
+	return base64.StdEncoding.EncodeToString([]byte(strToConvert))
+}
+
 func TestRun_RunMode(t *testing.T) {
 	inventoryStr := `
 envs:
@@ -21,8 +25,7 @@ envs:
       is_expand: true
 `
 
-	inventoryBytes := []byte(inventoryStr)
-	inventoryBase64Str := base64.StdEncoding.EncodeToString(inventoryBytes)
+	inventoryBase64Str := stringBase64Convert(inventoryStr)
 	t.Log("Inventory:", inventoryBase64Str)
 
 	configStr := `
@@ -58,25 +61,40 @@ workflows:
         - content: exit 1
 `
 
-	configBytes := []byte(configStr)
-	configBase64Str := base64.StdEncoding.EncodeToString(configBytes)
+	configBase64Str := stringBase64Convert(configStr)
 	t.Log("Config:", configBase64Str)
 
 	t.Log("Perform - run")
-	err := PerformRunOrTrigger(testCommandHostID, config.Model{}, inventoryBase64Str, configBase64Str, "target", false, "/")
-	require.NoError(t, err)
+	{
+		// workflow param
+		require.NoError(t, PerformRunOrTrigger(testCommandHostID, config.Model{}, inventoryBase64Str, configBase64Str,
+			"", "target", false, "/"))
+		// run JSON param
+		require.NoError(t, PerformRunOrTrigger(testCommandHostID, config.Model{}, inventoryBase64Str, configBase64Str,
+			stringBase64Convert(`{"workflow":"target"}`), "", false, "/"))
+	}
 
 	t.Log("Perform - run without inventory")
-	err = PerformRunOrTrigger(testCommandHostID, config.Model{}, "", configBase64Str, "simple-success", false, "")
-	require.NoError(t, err)
+	{
+		// workflow param
+		require.NoError(t, PerformRunOrTrigger(testCommandHostID, config.Model{}, "", configBase64Str,
+			"", "simple-success", false, ""))
+		// run JSON param
+		require.NoError(t, PerformRunOrTrigger(testCommandHostID, config.Model{}, "", configBase64Str,
+			stringBase64Convert(`{"workflow":"simple-success"}`), "", false, ""))
+	}
 
 	t.Log("Perform - invalid workflow")
-	err = PerformRunOrTrigger(testCommandHostID, config.Model{}, "", configBase64Str, "does-not-exist", false, "")
-	require.Error(t, err)
+	{
+		err := PerformRunOrTrigger(testCommandHostID, config.Model{}, "", configBase64Str, "", "does-not-exist", false, "")
+		require.Error(t, err)
+	}
 
 	t.Log("Perform - fail-test")
-	err = PerformRunOrTrigger(testCommandHostID, config.Model{}, "", configBase64Str, "fail-test", false, "")
-	require.Error(t, err)
+	{
+		err := PerformRunOrTrigger(testCommandHostID, config.Model{}, "", configBase64Str, "", "fail-test", false, "")
+		require.Error(t, err)
+	}
 }
 
 func TestRun_TriggerMode(t *testing.T) {
@@ -130,14 +148,20 @@ workflows:
 	t.Log("Config:", configBase64Str)
 
 	t.Log("Perform - simple OK")
-	err := PerformRunOrTrigger(testCommandHostID, config.Model{}, inventoryBase64Str, configBase64Str, "trig-target", true, "")
-	require.NoError(t, err)
+	{
+		err := PerformRunOrTrigger(testCommandHostID, config.Model{}, inventoryBase64Str, configBase64Str, "", "trig-target", true, "")
+		require.NoError(t, err)
+	}
 
 	t.Log("Perform - no definition")
-	err = PerformRunOrTrigger(testCommandHostID, config.Model{}, "", configBase64Str, "no-def", true, "")
-	require.Error(t, err)
+	{
+		err := PerformRunOrTrigger(testCommandHostID, config.Model{}, "", configBase64Str, "", "no-def", true, "")
+		require.Error(t, err)
+	}
 
 	t.Log("Perform - fail-test")
-	err = PerformRunOrTrigger(testCommandHostID, config.Model{}, "", configBase64Str, "trig-fail-test", true, "")
-	require.Error(t, err)
+	{
+		err := PerformRunOrTrigger(testCommandHostID, config.Model{}, "", configBase64Str, "", "trig-fail-test", true, "")
+		require.Error(t, err)
+	}
 }

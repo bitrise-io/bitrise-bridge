@@ -23,6 +23,9 @@ const (
 	ConfigDataBase64Key = "config-base64"
 	configDataKeyShort  = "c"
 
+	// JSONParamsBase64Key ...
+	JSONParamsBase64Key = "json-params-base64"
+
 	// WorkflowNameKey ...
 	WorkflowNameKey      = "workflow"
 	workflowNameKeyShort = "w"
@@ -87,6 +90,11 @@ var (
 		Usage: "config data in base64 (~ content of bitrise.yml)",
 	}
 
+	flJSONParamsBase64 = cli.StringFlag{
+		Name:  JSONParamsBase64Key,
+		Usage: "run params, in Base64 encoded JSON",
+	}
+
 	flWorkflowName = cli.StringFlag{
 		Name:  WorkflowNameKey + ", " + workflowNameKeyShort,
 		Usage: "workflow to pass to bitrise",
@@ -114,6 +122,7 @@ var (
 			Flags: []cli.Flag{
 				flInventoryData,
 				flConfigData,
+				flJSONParamsBase64,
 				flWorkflowName,
 				flWorkdirPath,
 			},
