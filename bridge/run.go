@@ -21,7 +21,7 @@ const (
 )
 
 // PerformRunOrTrigger ...
-func PerformRunOrTrigger(commandHostID string, bridgeConfig config.Model, inventoryBase64Str, configBase64Str, workflowNameOrTriggerPattern string, isUseTrigger bool, workdirPath string) error {
+func PerformRunOrTrigger(commandHostID string, bridgeConfig config.Model, inventoryBase64Str, configBase64Str, runParamJSONBase64, workflowNameOrTriggerPattern string, isUseTrigger bool, workdirPath string) error {
 	// Decode inventory - for error/encoding check
 	if inventoryBase64Str != "" {
 		_, err := base64.StdEncoding.DecodeString(inventoryBase64Str)
@@ -45,15 +45,15 @@ func PerformRunOrTrigger(commandHostID string, bridgeConfig config.Model, invent
 	// Call bitrise
 	switch commandHostID {
 	case CommandHostIDCmdBridge:
-		if err := performRunOrTriggerWithCmdBridge(bitriseCommandToUse, inventoryBase64Str, configBase64Str, workflowNameOrTriggerPattern, workdirPath); err != nil {
+		if err := performRunOrTriggerWithCmdBridge(bitriseCommandToUse, inventoryBase64Str, configBase64Str, runParamJSONBase64, workflowNameOrTriggerPattern, workdirPath); err != nil {
 			return err
 		}
 	case CommandHostIDNone:
-		if err := performRunOrTriggerWithoutCommandHost(bitriseCommandToUse, inventoryBase64Str, configBase64Str, workflowNameOrTriggerPattern, workdirPath); err != nil {
+		if err := performRunOrTriggerWithoutCommandHost(bitriseCommandToUse, inventoryBase64Str, configBase64Str, runParamJSONBase64, workflowNameOrTriggerPattern, workdirPath); err != nil {
 			return err
 		}
 	case CommandHostIDDocker:
-		if err := performRunOrTriggerWithDocker(bridgeConfig, bitriseCommandToUse, inventoryBase64Str, configBase64Str, workflowNameOrTriggerPattern, workdirPath); err != nil {
+		if err := performRunOrTriggerWithDocker(bridgeConfig, bitriseCommandToUse, inventoryBase64Str, configBase64Str, runParamJSONBase64, workflowNameOrTriggerPattern, workdirPath); err != nil {
 			return err
 		}
 	default:
@@ -63,15 +63,25 @@ func PerformRunOrTrigger(commandHostID string, bridgeConfig config.Model, invent
 	return nil
 }
 
-func createBitriseCallArgs(bitriseCommandToUse, inventoryBase64, configBase64, workflowNameOrTriggerPattern string) []string {
+func createBitriseCallArgs(bitriseCommandToUse, inventoryBase64, configBase64, runParamJSONBase64, workflowNameOrTriggerPattern string) []string {
 	logLevel := log.GetLevel().String()
 
 	retArgs := []string{
 		"--loglevel", logLevel,
-		bitriseCommandToUse, workflowNameOrTriggerPattern,
-		"--config-base64", configBase64,
 	}
 
+	if len(runParamJSONBase64) > 0 {
+		// new style, all params in one (Base64 encoded) JSON
+		retArgs = append(retArgs, bitriseCommandToUse, "--json-params-base64", runParamJSONBase64)
+	} else {
+		// old style, separate params
+		retArgs = append(retArgs, bitriseCommandToUse, workflowNameOrTriggerPattern)
+	}
+
+	// config / bitrise.yml
+	retArgs = append(retArgs, "--config-base64", configBase64)
+
+	// inventory / secrets
 	if inventoryBase64 != "" {
 		retArgs = append(retArgs, "--inventory-base64", inventoryBase64)
 	}
@@ -79,8 +89,8 @@ func createBitriseCallArgs(bitriseCommandToUse, inventoryBase64, configBase64, w
 	return retArgs
 }
 
-func performRunOrTriggerWithoutCommandHost(bitriseCommandToUse, inventoryBase64, configBase64, workflowNameOrTriggerPattern, workdirPath string) error {
-	bitriseCallArgs := createBitriseCallArgs(bitriseCommandToUse, inventoryBase64, configBase64, workflowNameOrTriggerPattern)
+func performRunOrTriggerWithoutCommandHost(bitriseCommandToUse, inventoryBase64, configBase64, runParamJSONBase64, workflowNameOrTriggerPattern, workdirPath string) error {
+	bitriseCallArgs := createBitriseCallArgs(bitriseCommandToUse, inventoryBase64, configBase64, runParamJSONBase64, workflowNameOrTriggerPattern)
 	log.Debugf("=> (debug) bitriseCallArgs: %s", bitriseCallArgs)
 
 	if err := cmdex.RunCommandInDir(workdirPath, "bitrise", bitriseCallArgs...); err != nil {
@@ -91,14 +101,14 @@ func performRunOrTriggerWithoutCommandHost(bitriseCommandToUse, inventoryBase64,
 	return nil
 }
 
-func performRunOrTriggerWithDocker(bridgeConfig config.Model, bitriseCommandToUse, inventoryBase64, configBase64, workflowNameOrTriggerPattern, workdirPath string) error {
+func performRunOrTriggerWithDocker(bridgeConfig config.Model, bitriseCommandToUse, inventoryBase64, configBase64, runParamJSONBase64, workflowNameOrTriggerPattern, workdirPath string) error {
 	dockerParamImageToUse := bridgeConfig.Docker.Image
 	if dockerParamImageToUse == "" {
 		return errors.New("No docker-image-id specified")
 	}
 	dockerParamIsAllowAccessToDockerInContainer := bridgeConfig.Docker.IsAllowAccessToDockerInContainer
 
-	bitriseCallArgs := createBitriseCallArgs(bitriseCommandToUse, inventoryBase64, configBase64, workflowNameOrTriggerPattern)
+	bitriseCallArgs := createBitriseCallArgs(bitriseCommandToUse, inventoryBase64, configBase64, runParamJSONBase64, workflowNameOrTriggerPattern)
 	log.Debugf("=> (debug) bitriseCallArgs: %s", bitriseCallArgs)
 
 	fullDockerArgs := []string{
@@ -140,8 +150,8 @@ func performRunOrTriggerWithDocker(bridgeConfig config.Model, bitriseCommandToUs
 	return nil
 }
 
-func performRunOrTriggerWithCmdBridge(bitriseCommandToUse, inventoryBase64, configBase64, workflowNameOrTriggerPattern, workdirPath string) error {
-	bitriseCallArgs := createBitriseCallArgs(bitriseCommandToUse, inventoryBase64, configBase64, workflowNameOrTriggerPattern)
+func performRunOrTriggerWithCmdBridge(bitriseCommandToUse, inventoryBase64, configBase64, runParamJSONBase64, workflowNameOrTriggerPattern, workdirPath string) error {
+	bitriseCallArgs := createBitriseCallArgs(bitriseCommandToUse, inventoryBase64, configBase64, runParamJSONBase64, workflowNameOrTriggerPattern)
 	log.Debugf("=> (debug) bitriseCallArgs: %s", bitriseCallArgs)
 
 	bitriseCmdStr := fmt.Sprintf("bitrise %s", strings.Join(bitriseCallArgs, " "))
