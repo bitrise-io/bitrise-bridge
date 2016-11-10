@@ -1,4 +1,4 @@
-FROM golang:1.7
+FROM golang:1.7.3
 
 ENV PROJ_NAME bitrise-bridge
 
@@ -8,7 +8,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -y install git mercurial curl rsync r
 
 #
 # Install Bitrise CLI
-RUN curl -L https://github.com/bitrise-io/bitrise/releases/download/1.3.7/bitrise-$(uname -s)-$(uname -m) > /usr/local/bin/bitrise
+RUN curl -L https://github.com/bitrise-io/bitrise/releases/download/1.4.3/bitrise-$(uname -s)-$(uname -m) > /usr/local/bin/bitrise
 RUN chmod +x /usr/local/bin/bitrise
 RUN bitrise setup
 

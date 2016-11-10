@@ -16,10 +16,8 @@ workflows:
         - content: |-
             #!/bin/bash
             set -ex
-
             # Check for unhandled errors
             go get -u github.com/kisielk/errcheck
-
             # Go lint
             go get -u github.com/golang/lint/golint
 
