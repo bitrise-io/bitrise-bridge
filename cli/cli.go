@@ -8,8 +8,8 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/bitrise-io/go-utils/parseutil"
 	"github.com/bitrise-io/go-utils/pathutil"
-	"github.com/bitrise-tools/bitrise-bridge/bridge"
-	"github.com/bitrise-tools/bitrise-bridge/config"
+	"github.com/bitrise-io/bitrise-bridge/bridge"
+	"github.com/bitrise-io/bitrise-bridge/config"
 	"github.com/codegangsta/cli"
 )
 

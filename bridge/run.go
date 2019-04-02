@@ -8,7 +8,7 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/bitrise-io/go-utils/cmdex"
-	"github.com/bitrise-tools/bitrise-bridge/config"
+	"github.com/bitrise-io/bitrise-bridge/config"
 )
 
 const (

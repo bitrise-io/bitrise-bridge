@@ -1,6 +1,6 @@
 package main
 
-import "github.com/bitrise-tools/bitrise-bridge/cli"
+import "github.com/bitrise-io/bitrise-bridge/cli"
 
 func main() {
 	cli.Run()

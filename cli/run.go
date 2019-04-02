@@ -5,7 +5,7 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/bitrise-io/go-utils/errorutil"
-	"github.com/bitrise-tools/bitrise-bridge/bridge"
+	"github.com/bitrise-io/bitrise-bridge/bridge"
 	"github.com/codegangsta/cli"
 )
 
